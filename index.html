@@ -553,84 +553,6 @@
     }
 
     /* Hobby grid */
-    .hobby-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 28px 22px;
-      margin: 18px 0;
-      align-items: flex-start;
-    }
-
-    .hobby-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 0 0 auto;
-    }
-
-    .hobby-svg {
-      display: block;
-      opacity: 0.82;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
-
-    .hobby-card:hover .hobby-svg {
-      opacity: 1;
-      transform: translateY(-3px);
-    }
-
-    .hobby-label {
-      font-size: 10px;
-      font-weight: 700;
-      margin-top: 10px;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
-      text-align: center;
-    }
-
-    .hobby-desc {
-      font-size: 10px;
-      color: #3a3a3a;
-      margin-top: 3px;
-      text-align: center;
-      font-style: italic;
-    }
-
-    /* Experience detail badges */
-    .exp-tag {
-      display: inline-block;
-      font-size: 10px;
-      padding: 2px 9px;
-      border-radius: 3px;
-      border: 1px solid;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-
-    .exp-bullet {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .exp-bullet-tag {
-      flex-shrink: 0;
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 3px;
-      border: 1px solid;
-      margin-top: 3px;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-
-    .exp-bullet p {
-      margin: 0;
-      font-size: 13px;
-      line-height: 1.75;
-      color: var(--terminal-text);
-    }
-
     /* Solar Carousel */
     .carousel-slide { opacity: 1; transition: opacity 0.4s ease; }
 
@@ -684,6 +606,97 @@
     .contact-val a:hover { text-decoration: underline; }
 
     ::selection { background: var(--terminal-green); color: var(--terminal-bg); }
+
+    /* ============================================
+       MARQUEE SCROLLING SKILLS & HOBBIES
+    ============================================ */
+    .marquee-section {
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .marquee-row {
+      display: flex;
+      overflow: hidden;
+      margin: 20px 0;
+      position: relative;
+      mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    }
+
+    .marquee-track {
+      display: flex;
+      animation: marquee-scroll-left 35s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-row.reverse .marquee-track {
+      animation: marquee-scroll-right 30s linear infinite;
+    }
+
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee-scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes marquee-scroll-right {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    .marquee-item {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 28px;
+      flex-shrink: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      cursor: default;
+    }
+
+    .marquee-item:hover {
+      transform: scale(1.15);
+      opacity: 1 !important;
+    }
+
+    .marquee-item:hover ~ .marquee-item,
+    .marquee-track:hover .marquee-item:not(:hover) {
+      opacity: 0.4;
+    }
+
+    .marquee-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 8px;
+      opacity: 0.85;
+    }
+
+    .marquee-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .marquee-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #333, transparent);
+      margin: 8px 0;
+    }
+
+    .marquee-row-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -1483,166 +1496,27 @@
 
       <div class="content-view" id="content-hobbies">
         <div class="content-header">
-          <div class="content-title">🎮 Skills & Interest</div>
+          <div class="content-title">🤓 Skills & Interest</div>
           <div class="content-path">~/Emma's Personal Profile/skills-interest.md</div>
         </div>
         <div class="content-body">
-          <p style="color:#555; font-size:12px; margin-bottom:20px;">Things I reach for when the terminal is closed.</p>
+          
 
-          <div class="hobby-grid">
-
-            <!-- BADMINTON -->
-            <div class="hobby-card">
-              <svg width="108" height="128" viewBox="0 0 108 128" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #33d17a)">
-                <defs><clipPath id="clip-badminton"><ellipse cx="48" cy="46" rx="26" ry="32"/></clipPath></defs>
-                <ellipse cx="48" cy="46" rx="26" ry="32" stroke="#33d17a" stroke-width="1.7"/>
-                <g clip-path="url(#clip-badminton)" stroke="#33d17a" stroke-width="0.6" opacity="0.32">
-                  <line x1="18" y1="26" x2="78" y2="26"/><line x1="18" y1="36" x2="78" y2="36"/>
-                  <line x1="18" y1="46" x2="78" y2="46"/><line x1="18" y1="56" x2="78" y2="56"/>
-                  <line x1="18" y1="66" x2="78" y2="66"/>
-                  <line x1="30" y1="12" x2="30" y2="80"/><line x1="40" y1="12" x2="40" y2="80"/>
-                  <line x1="50" y1="12" x2="50" y2="80"/><line x1="60" y1="12" x2="60" y2="80"/>
-                </g>
-                <path d="M36 78 L48 84 L60 78" stroke="#33d17a" stroke-width="1.7" stroke-linejoin="round"/>
-                <line x1="48" y1="84" x2="48" y2="118" stroke="#33d17a" stroke-width="2.4" stroke-linecap="round"/>
-                <rect x="43" y="106" width="10" height="2.5" rx="1.2" fill="#33d17a" opacity="0.38"/>
-                <rect x="43" y="112" width="10" height="2.5" rx="1.2" fill="#33d17a" opacity="0.38"/>
-                <circle cx="88" cy="22" r="5" stroke="#33d17a" stroke-width="1.5"/>
-                <line x1="88" y1="27" x2="82" y2="50" stroke="#33d17a" stroke-width="1" opacity="0.6"/>
-                <line x1="88" y1="27" x2="88" y2="52" stroke="#33d17a" stroke-width="1" opacity="0.6"/>
-                <line x1="88" y1="27" x2="94" y2="50" stroke="#33d17a" stroke-width="1" opacity="0.6"/>
-                <line x1="88" y1="27" x2="78" y2="47" stroke="#33d17a" stroke-width="0.8" opacity="0.4"/>
-                <line x1="88" y1="27" x2="98" y2="47" stroke="#33d17a" stroke-width="0.8" opacity="0.4"/>
-                <path d="M76 46 Q88 56 100 46" stroke="#33d17a" stroke-width="0.9" opacity="0.6"/>
-              </svg>
-              <div class="hobby-label" style="color:#33d17a;">Badminton</div>
-              <div class="hobby-desc"></div>
+          <div class="marquee-section">
+            <div class="marquee-row-label" style="color:var(--terminal-green);">◆ Skills</div>
+            <div class="marquee-row">
+            <div class="marquee-track">
+              <div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6z M10 8h12 M10 12h12 M10 16h8 M10 20h10 M10 24h6"/></svg><span class="marquee-label" style="color:#64d2ff">SQL</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 28h4V14H6zm8 0h4V8h-4zm8 0h4V18h-4z"/></svg><span class="marquee-label" style="color:#f5c211">PowerBI</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h16v20H8zm0 8h16M8 18h16M14 6v20"/></svg><span class="marquee-label" style="color:#33d17a">Pandas</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 28L14 4l8 24M10 20h8 M22 4h8v24h-8z"/></svg><span class="marquee-label" style="color:#0a84ff">NumPy</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8h16v16H8zM10 16h4m-2-2v4M20 16h4m-2-2v4"/></svg><span class="marquee-label" style="color:#bf5af2">C++</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6h8c3 0 5 2 5 5v4c0 3-2 5-5 5h-8c-3 0-5-2-5-5v-4c0-3 2-5 5-5zm8 12v4c0 3-2 5-5 5h-8c-3 0-5-2-5-5v-4"/></svg><span class="marquee-label" style="color:#f5c211">Python</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm4 8h12M10 14h12M10 20h8"/></svg><span class="marquee-label" style="color:#ff453a">PPT</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm0 6l20-6M6 16l20-6M6 22l20-6M6 28l20-6"/></svg><span class="marquee-label" style="color:#33d17a">Excel</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L4 20l16 16 16-16L20 4zm0 8v16m-6-10h12"/></svg><span class="marquee-label" style="color:#ff453a">Git</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c-8 0-12 6-12 12s4 12 12 12 12-6 12-12S24 4 16 4zm0 8c2 0 4 2 4 4s-2 4-4 4"/></svg><span class="marquee-label" style="color:#64d2ff">Canva</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm4 8c0 6 4 10 8 10s8-4 8-10"/></svg><span class="marquee-label" style="color:#33d17a">PhotoShop</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-8 8 8 8 8-8-8-8zm0 16l8 8 8-8-8-8"/></svg><span class="marquee-label" style="color:#bf5af2">Vibe Coding</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4C9 4 4 9 4 16s5 12 12 12 12-5 12-12S23 4 16 4zm0 8c2 0 4 2 4 4s-2 4-4 4"/></svg><span class="marquee-label" style="color:#ff453a">PyTorch</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 28L12 4l8 16 8-16v24M4 4h8"/></svg><span class="marquee-label" style="color:#0a84ff">MATLAB</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h16v4H8zM6 12h20M10 12v12M22 12v12M6 28h20"/></svg><span class="marquee-label" style="color:#64d2ff">LaTeX</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4C10 4 6 8 6 14c0 4 2 7 4 9l6 9 6-9c2-2 4-5 4-9 0-6-4-10-10-10z"/></svg><span class="marquee-label" style="color:#f5c211">Linux</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff8c42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h20v4H6zM6 14h20M6 18h14M6 22h18"/></svg><span class="marquee-label" style="color:#ff8c42">Jupyter</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm4 8h10c2 0 4 2 4 4s-2 4-4 4H10"/></svg><span class="marquee-label" style="color:#0a84ff">R</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l-4 12h8zm-8 12l-4 8h24l-4-8zm0 12l-4 8h24l-4-8z"/></svg><span class="marquee-label" style="color:#ff453a">Spark</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6z M10 8h12 M10 12h12 M10 16h8 M10 20h10 M10 24h6"/></svg><span class="marquee-label" style="color:#64d2ff">SQL</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 28h4V14H6zm8 0h4V8h-4zm8 0h4V18h-4z"/></svg><span class="marquee-label" style="color:#f5c211">PowerBI</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h16v20H8zm0 8h16M8 18h16M14 6v20"/></svg><span class="marquee-label" style="color:#33d17a">Pandas</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 28L14 4l8 24M10 20h8 M22 4h8v24h-8z"/></svg><span class="marquee-label" style="color:#0a84ff">NumPy</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8h16v16H8zM10 16h4m-2-2v4M20 16h4m-2-2v4"/></svg><span class="marquee-label" style="color:#bf5af2">C++</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6h8c3 0 5 2 5 5v4c0 3-2 5-5 5h-8c-3 0-5-2-5-5v-4c0-3 2-5 5-5zm8 12v4c0 3-2 5-5 5h-8c-3 0-5-2-5-5v-4"/></svg><span class="marquee-label" style="color:#f5c211">Python</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm4 8h12M10 14h12M10 20h8"/></svg><span class="marquee-label" style="color:#ff453a">PPT</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm0 6l20-6M6 16l20-6M6 22l20-6M6 28l20-6"/></svg><span class="marquee-label" style="color:#33d17a">Excel</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L4 20l16 16 16-16L20 4zm0 8v16m-6-10h12"/></svg><span class="marquee-label" style="color:#ff453a">Git</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c-8 0-12 6-12 12s4 12 12 12 12-6 12-12S24 4 16 4zm0 8c2 0 4 2 4 4s-2 4-4 4"/></svg><span class="marquee-label" style="color:#64d2ff">Canva</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm4 8c0 6 4 10 8 10s8-4 8-10"/></svg><span class="marquee-label" style="color:#33d17a">PhotoShop</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-8 8 8 8 8-8-8-8zm0 16l8 8 8-8-8-8"/></svg><span class="marquee-label" style="color:#bf5af2">Vibe Coding</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4C9 4 4 9 4 16s5 12 12 12 12-5 12-12S23 4 16 4zm0 8c2 0 4 2 4 4s-2 4-4 4"/></svg><span class="marquee-label" style="color:#ff453a">PyTorch</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 28L12 4l8 16 8-16v24M4 4h8"/></svg><span class="marquee-label" style="color:#0a84ff">MATLAB</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h16v4H8zM6 12h20M10 12v12M22 12v12M6 28h20"/></svg><span class="marquee-label" style="color:#64d2ff">LaTeX</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4C10 4 6 8 6 14c0 4 2 7 4 9l6 9 6-9c2-2 4-5 4-9 0-6-4-10-10-10z"/></svg><span class="marquee-label" style="color:#f5c211">Linux</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff8c42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h20v4H6zM6 14h20M6 18h14M6 22h18"/></svg><span class="marquee-label" style="color:#ff8c42">Jupyter</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h20v24H6zm4 8h10c2 0 4 2 4 4s-2 4-4 4H10"/></svg><span class="marquee-label" style="color:#0a84ff">R</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l-4 12h8zm-8 12l-4 8h24l-4-8zm0 12l-4 8h24l-4-8z"/></svg><span class="marquee-label" style="color:#ff453a">Spark</span></div>
             </div>
-
-            <!-- TENNIS -->
-            <div class="hobby-card">
-              <svg width="110" height="108" viewBox="0 0 110 108" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #f5c211)">
-                <defs><clipPath id="clip-tennis"><ellipse cx="52" cy="50" rx="30" ry="36"/></clipPath></defs>
-                <circle cx="87" cy="22" r="14" stroke="#f5c211" stroke-width="1.5"/>
-                <path d="M76 13 Q83 22 76 31" stroke="#f5c211" stroke-width="1.2" stroke-linecap="round"/>
-                <path d="M98 13 Q91 22 98 31" stroke="#f5c211" stroke-width="1.2" stroke-linecap="round"/>
-                <ellipse cx="52" cy="50" rx="30" ry="36" stroke="#f5c211" stroke-width="1.7"/>
-                <g clip-path="url(#clip-tennis)" stroke="#f5c211" stroke-width="0.6" opacity="0.28">
-                  <line x1="18" y1="26" x2="86" y2="26"/><line x1="18" y1="35" x2="86" y2="35"/>
-                  <line x1="18" y1="44" x2="86" y2="44"/><line x1="18" y1="53" x2="86" y2="53"/>
-                  <line x1="18" y1="62" x2="86" y2="62"/><line x1="18" y1="71" x2="86" y2="71"/>
-                  <line x1="30" y1="12" x2="30" y2="88"/><line x1="40" y1="12" x2="40" y2="88"/>
-                  <line x1="52" y1="12" x2="52" y2="88"/><line x1="64" y1="12" x2="64" y2="88"/>
-                  <line x1="74" y1="12" x2="74" y2="88"/>
-                </g>
-                <path d="M38 86 L52 92 L66 86" stroke="#f5c211" stroke-width="1.7" stroke-linejoin="round"/>
-                <line x1="52" y1="92" x2="52" y2="106" stroke="#f5c211" stroke-width="2.4" stroke-linecap="round"/>
-              </svg>
-              <div class="hobby-label" style="color:#f5c211;">Tennis</div>
-              <div class="hobby-desc"></div>
-            </div>
-
-            <!-- GUITAR -->
-            <div class="hobby-card">
-              <svg width="88" height="148" viewBox="0 0 88 148" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #bf5af2)">
-                <path d="M44 52 C58 52,70 60,70 73 C70 81,64 85,58 87 C68 93,72 107,68 118 C64 130,54 136,44 136 C34 136,24 130,20 118 C16 107,20 93,30 87 C24 85,18 81,18 73 C18 60,30 52,44 52 Z" stroke="#bf5af2" stroke-width="1.7"/>
-                <circle cx="44" cy="108" r="10" stroke="#bf5af2" stroke-width="1.4"/>
-                <rect x="34" y="120" width="20" height="3" rx="1.5" stroke="#bf5af2" stroke-width="1.2"/>
-                <rect x="39" y="14" width="10" height="40" rx="2" stroke="#bf5af2" stroke-width="1.5"/>
-                <line x1="39" y1="18" x2="49" y2="18" stroke="#bf5af2" stroke-width="2.2"/>
-                <rect x="36" y="5" width="16" height="13" rx="3" stroke="#bf5af2" stroke-width="1.5"/>
-                <line x1="36" y1="9"  x2="31" y2="9"  stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
-                <line x1="36" y1="13" x2="31" y2="13" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
-                <line x1="36" y1="17" x2="31" y2="17" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
-                <line x1="52" y1="9"  x2="57" y2="9"  stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
-                <line x1="52" y1="13" x2="57" y2="13" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
-                <line x1="52" y1="17" x2="57" y2="17" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
-                <line x1="41"   y1="19" x2="38" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
-                <line x1="42.5" y1="19" x2="40" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
-                <line x1="44"   y1="19" x2="42" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
-                <line x1="45.5" y1="19" x2="46" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
-                <line x1="47"   y1="19" x2="48" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
-                <line x1="48.5" y1="19" x2="50" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
-                <line x1="39" y1="26" x2="49" y2="26" stroke="#bf5af2" stroke-width="0.8" opacity="0.4"/>
-                <line x1="39" y1="34" x2="49" y2="34" stroke="#bf5af2" stroke-width="0.8" opacity="0.4"/>
-                <line x1="39" y1="42" x2="49" y2="42" stroke="#bf5af2" stroke-width="0.8" opacity="0.4"/>
-                <circle cx="44" cy="30" r="1.5" fill="#bf5af2" opacity="0.45"/>
-              </svg>
-              <div class="hobby-label" style="color:#bf5af2;">Guitar</div>
-              <div class="hobby-desc"></div>
-            </div>
-
-            <!-- MUSICALS -->
-            <div class="hobby-card">
-              <svg width="130" height="104" viewBox="0 0 130 104" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #64d2ff)">
-                <circle cx="38" cy="46" r="24" stroke="#64d2ff" stroke-width="1.7"/>
-                <path d="M29 40 Q32 36 35 40" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
-                <path d="M41 40 Q44 36 47 40" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
-                <path d="M26 54 Q38 66 50 54" stroke="#64d2ff" stroke-width="1.7" stroke-linecap="round"/>
-                <circle cx="26" cy="54" r="1.8" fill="#64d2ff" opacity="0.45"/>
-                <circle cx="50" cy="54" r="1.8" fill="#64d2ff" opacity="0.45"/>
-                <circle cx="92" cy="52" r="24" stroke="#64d2ff" stroke-width="1.7"/>
-                <path d="M83 46 Q86 50 89 46" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
-                <path d="M95 46 Q98 50 101 46" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
-                <path d="M80 62 Q92 50 104 62" stroke="#64d2ff" stroke-width="1.7" stroke-linecap="round"/>
-                <path d="M83 55 Q82 61 83 64" stroke="#64d2ff" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
-                <path d="M101 55 Q102 61 101 64" stroke="#64d2ff" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
-                <text x="4"   y="98" font-size="15" fill="#64d2ff" opacity="0.5" font-family="sans-serif">♪</text>
-                <text x="112" y="98" font-size="15" fill="#64d2ff" opacity="0.5" font-family="sans-serif">♫</text>
-                <line x1="14" y1="82" x2="116" y2="82" stroke="#64d2ff" stroke-width="0.7" opacity="0.2" stroke-dasharray="4,3"/>
-              </svg>
-              <div class="hobby-label" style="color:#64d2ff;">Musicals</div>
-              <div class="hobby-desc"></div>
-            </div>
-
-            <!-- COOKING -->
-            <div class="hobby-card">
-              <svg width="108" height="118" viewBox="0 0 108 118" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #ff453a)">
-                <path d="M33 30 Q29 22 33 14 Q37 6 33 0"  stroke="#ff453a" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
-                <path d="M54 28 Q50 20 54 12 Q58 4 54 0"  stroke="#ff453a" stroke-width="1.3" stroke-linecap="round" opacity="0.75"/>
-                <path d="M75 30 Q71 22 75 14 Q79 6 75 0"  stroke="#ff453a" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
-                <path d="M24 40 Q54 30 84 40" stroke="#ff453a" stroke-width="1.8" stroke-linecap="round"/>
-                <circle cx="54" cy="34" r="4.5" stroke="#ff453a" stroke-width="1.5"/>
-                <path d="M22 46 L24 92 Q54 102 84 92 L86 46" stroke="#ff453a" stroke-width="1.7" stroke-linejoin="round"/>
-                <ellipse cx="54" cy="46" rx="32" ry="7" stroke="#ff453a" stroke-width="1.7"/>
-                <path d="M22 58 Q10 58 10 66 Q10 74 22 74" stroke="#ff453a" stroke-width="1.7" stroke-linecap="round"/>
-                <path d="M86 58 Q98 58 98 66 Q98 74 86 74" stroke="#ff453a" stroke-width="1.7" stroke-linecap="round"/>
-                <line x1="28" y1="68" x2="80" y2="68" stroke="#ff453a" stroke-width="0.7" opacity="0.22"/>
-                <line x1="24" y1="104" x2="84" y2="104" stroke="#ff453a" stroke-width="1" opacity="0.28" stroke-dasharray="4,3"/>
-              </svg>
-              <div class="hobby-label" style="color:#ff453a;">Cooking</div>
-              <div class="hobby-desc"></div>
-            </div>
-
-            <!-- HIKING -->
-            <div class="hobby-card">
-              <svg width="140" height="100" viewBox="0 0 140 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #0a84ff)">
-                <polyline points="0,85 28,28 56,85"   stroke="#0a84ff" stroke-width="1"   opacity="0.25" stroke-linejoin="round"/>
-                <polyline points="30,85 65,16 100,85"  stroke="#0a84ff" stroke-width="1.3" opacity="0.5"  stroke-linejoin="round"/>
-                <polyline points="58,34 65,16 72,34"   stroke="#0a84ff" stroke-width="1"   opacity="0.4"  stroke-linejoin="round"/>
-                <polyline points="10,85 42,42 74,85"   stroke="#0a84ff" stroke-width="2"   opacity="0.9"  stroke-linejoin="round"/>
-                <polyline points="35,56 42,42 49,56"   stroke="#0a84ff" stroke-width="1.2" opacity="0.7"  stroke-linejoin="round"/>
-                <circle cx="120" cy="22" r="9" stroke="#0a84ff" stroke-width="1.4"/>
-                <line x1="120" y1="9"   x2="120" y2="5"   stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
-                <line x1="133" y1="22"  x2="137" y2="22"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
-                <line x1="129" y1="13"  x2="132" y2="10"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
-                <line x1="129" y1="31"  x2="132" y2="34"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
-                <line x1="111" y1="13"  x2="108" y2="10"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
-                <line x1="0"   y1="85"  x2="140" y2="85"  stroke="#0a84ff" stroke-width="1"   opacity="0.28"/>
-                <path d="M10 85 Q30 83 50 85 Q70 87 95 85 Q115 83 132 85" stroke="#0a84ff" stroke-width="0.9" opacity="0.38" stroke-dasharray="4,4"/>
-                <circle cx="104" cy="78" r="3.5" stroke="#0a84ff" stroke-width="1.3"/>
-                <line x1="104" y1="81.5" x2="104" y2="91" stroke="#0a84ff" stroke-width="1.3"/>
-                <line x1="100" y1="85"   x2="108" y2="85" stroke="#0a84ff" stroke-width="1.3"/>
-                <line x1="104" y1="91"   x2="101" y2="98" stroke="#0a84ff" stroke-width="1.3" stroke-linecap="round"/>
-                <line x1="104" y1="91"   x2="107" y2="98" stroke="#0a84ff" stroke-width="1.3" stroke-linecap="round"/>
-                <line x1="108" y1="82"   x2="113" y2="98" stroke="#0a84ff" stroke-width="1"   opacity="0.6"  stroke-linecap="round"/>
-              </svg>
-              <div class="hobby-label" style="color:#0a84ff;">Hiking</div>
-              <div class="hobby-desc"></div>
-            </div>
-
           </div>
-        </div>
+            <div class="marquee-divider"></div>
+            <div class="marquee-row-label" style="color:var(--terminal-cyan);">◆ Interests</div>
+            <div class="marquee-row reverse">
+            <div class="marquee-track">
+              <div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l-2 24M8 8l12-4M8 24l12 4"/></svg><span class="marquee-label" style="color:#33d17a">Badminton</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c-8 0-12 6-12 12s4 12 12 12 12-6 12-12S24 4 16 4zm0 8v8m-4-4h8"/></svg><span class="marquee-label" style="color:#f5c211">Tennis</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h8v8h-8zM14 12v12M18 12v12M10 24h12v4H10z"/></svg><span class="marquee-label" style="color:#bf5af2">Guitar</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20M6 12h16M6 16h20M6 20h14M6 24h18M8 8v16"/></svg><span class="marquee-label" style="color:#64d2ff">Musicals</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h24v4H4zm2 4v8c0 2 2 4 4 4h12c2 0 4-2 4-4v-8"/></svg><span class="marquee-label" style="color:#ff453a">Cooking</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h12l4 4v12H6V12zM16 14a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg><span class="marquee-label" style="color:#0a84ff">Photography</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h24v16H4zM8 8v16M20 8v16"/></svg><span class="marquee-label" style="color:#f5c211">Movies</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l-2 24M8 8l12-4M8 24l12 4"/></svg><span class="marquee-label" style="color:#33d17a">Badminton</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c-8 0-12 6-12 12s4 12 12 12 12-6 12-12S24 4 16 4zm0 8v8m-4-4h8"/></svg><span class="marquee-label" style="color:#f5c211">Tennis</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h8v8h-8zM14 12v12M18 12v12M10 24h12v4H10z"/></svg><span class="marquee-label" style="color:#bf5af2">Guitar</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20M6 12h16M6 16h20M6 20h14M6 24h18M8 8v16"/></svg><span class="marquee-label" style="color:#64d2ff">Musicals</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h24v4H4zm2 4v8c0 2 2 4 4 4h12c2 0 4-2 4-4v-8"/></svg><span class="marquee-label" style="color:#ff453a">Cooking</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h12l4 4v12H6V12zM16 14a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg><span class="marquee-label" style="color:#0a84ff">Photography</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h24v16H4zM8 8v16M20 8v16"/></svg><span class="marquee-label" style="color:#f5c211">Movies</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l-2 24M8 8l12-4M8 24l12 4"/></svg><span class="marquee-label" style="color:#33d17a">Badminton</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c-8 0-12 6-12 12s4 12 12 12 12-6 12-12S24 4 16 4zm0 8v8m-4-4h8"/></svg><span class="marquee-label" style="color:#f5c211">Tennis</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h8v8h-8zM14 12v12M18 12v12M10 24h12v4H10z"/></svg><span class="marquee-label" style="color:#bf5af2">Guitar</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20M6 12h16M6 16h20M6 20h14M6 24h18M8 8v16"/></svg><span class="marquee-label" style="color:#64d2ff">Musicals</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h24v4H4zm2 4v8c0 2 2 4 4 4h12c2 0 4-2 4-4v-8"/></svg><span class="marquee-label" style="color:#ff453a">Cooking</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h12l4 4v12H6V12zM16 14a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg><span class="marquee-label" style="color:#0a84ff">Photography</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h24v16H4zM8 8v16M20 8v16"/></svg><span class="marquee-label" style="color:#f5c211">Movies</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#33d17a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l-2 24M8 8l12-4M8 24l12 4"/></svg><span class="marquee-label" style="color:#33d17a">Badminton</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c-8 0-12 6-12 12s4 12 12 12 12-6 12-12S24 4 16 4zm0 8v8m-4-4h8"/></svg><span class="marquee-label" style="color:#f5c211">Tennis</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#bf5af2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h8v8h-8zM14 12v12M18 12v12M10 24h12v4H10z"/></svg><span class="marquee-label" style="color:#bf5af2">Guitar</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#64d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20M6 12h16M6 16h20M6 20h14M6 24h18M8 8v16"/></svg><span class="marquee-label" style="color:#64d2ff">Musicals</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h24v4H4zm2 4v8c0 2 2 4 4 4h12c2 0 4-2 4-4v-8"/></svg><span class="marquee-label" style="color:#ff453a">Cooking</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h12l4 4v12H6V12zM16 14a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg><span class="marquee-label" style="color:#0a84ff">Photography</span></div><div class="marquee-item"><svg class="marquee-icon" viewBox="0 0 32 32" fill="none" stroke="#f5c211" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h24v16H4zM8 8v16M20 8v16"/></svg><span class="marquee-label" style="color:#f5c211">Movies</span></div>
+            </div>
+          </div>
+          </div></div>
         <div class="back-hint">
           Press <kbd>Esc</kbd> to go back to menu
         </div>
