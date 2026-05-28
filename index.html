@@ -1,0 +1,2364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emma's Personal Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --terminal-bg: #0c0c0c;
+      --terminal-header: #1c1c1c;
+      --terminal-text: #cccccc;
+      --terminal-green: #33d17a;
+      --terminal-bright: #ffffff;
+      --terminal-yellow: #f5c211;
+      --terminal-blue: #0a84ff;
+      --terminal-red: #ff453a;
+      --terminal-cyan: #64d2ff;
+      --terminal-magenta: #bf5af2;
+      --cursor-color: #ffffff;
+      --chrome-red: #ff5f56;
+      --chrome-yellow: #ffbd2e;
+      --chrome-green: #27c93f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      background: #1a1a1a;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      padding: 20px;
+    }
+
+    /* ============================================
+       MAC TERMINAL WINDOW
+    ============================================ */
+    .terminal-window {
+      width: 100%;
+      max-width: 960px;
+      height: 90vh;
+      max-height: 680px;
+      background: var(--terminal-bg);
+      border-radius: 10px;
+      box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 25px 80px rgba(0, 0, 0, 0.6),
+        0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: windowOpen 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes windowOpen {
+      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ============================================
+       WINDOW HEADER
+    ============================================ */
+    .window-header {
+      background: var(--terminal-header);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #333;
+      flex-shrink: 0;
+      -webkit-app-region: drag;
+    }
+
+    .traffic-lights {
+      display: flex;
+      gap: 8px;
+      -webkit-app-region: no-drag;
+    }
+
+    .traffic-light {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .traffic-light.red { background: var(--chrome-red); }
+    .traffic-light.yellow { background: var(--chrome-yellow); }
+    .traffic-light.green { background: var(--chrome-green); }
+
+    .traffic-light:hover { filter: brightness(1.15); }
+    .traffic-light:active { transform: scale(0.9); }
+
+    .traffic-lights:hover .traffic-light.red::after   { content: '✕'; }
+    .traffic-lights:hover .traffic-light.yellow::after { content: '−'; }
+    .traffic-lights:hover .traffic-light.green::after  { content: '⤢'; }
+
+    .traffic-light::after {
+      font-size: 8px;
+      font-weight: 900;
+      color: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 12px;
+    }
+
+    .window-title {
+      flex: 1;
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ============================================
+       TERMINAL CONTENT
+    ============================================ */
+    .terminal-body {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .terminal-body::-webkit-scrollbar { width: 8px; }
+    .terminal-body::-webkit-scrollbar-track { background: transparent; }
+    .terminal-body::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+    /* ============================================
+       TERMINAL LINES
+    ============================================ */
+    .terminal-line {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--terminal-text);
+    }
+
+    .prompt-user { color: var(--terminal-green); }
+    .prompt-path { color: var(--terminal-cyan); }
+    .prompt-symbol { color: var(--terminal-text); margin: 0 2px; }
+    .command-text { color: var(--terminal-bright); }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--cursor-color);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ============================================
+       ASCII BANNER
+    ============================================ */
+    .ascii-block {
+      margin: 12px 0 16px 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .ascii-block.visible { opacity: 1; }
+
+    .ascii-art {
+      font-size: 10px;
+      line-height: 1.05;
+      color: var(--terminal-cyan);
+      white-space: pre;
+      overflow-x: auto;
+      text-shadow: 0 0 10px rgba(100, 210, 255, 0.5);
+    }
+
+    .version-tag {
+      color: var(--terminal-green);
+      font-size: 12px;
+      margin: 10px 0 4px 0;
+    }
+
+    .welcome-text {
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 4px 0;
+    }
+
+    /* ============================================
+       INTERACTIVE SECTION
+    ============================================ */
+    .interactive-block {
+      margin-top: 20px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease;
+    }
+
+    .interactive-block.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .prompt-row {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .yn-prompt {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--terminal-text);
+      margin-top: 14px;
+    }
+
+    .yn-text { color: var(--terminal-text); }
+    .yn-bracket { color: var(--terminal-yellow); }
+
+    .input-display {
+      color: var(--terminal-green);
+      min-width: 4px;
+    }
+
+    .input-display.yes { color: var(--terminal-green); }
+
+    .choice-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .choice-hint kbd {
+      background: #222;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      color: var(--terminal-text);
+    }
+
+    /* ============================================
+       SECOND PROMPT & MENU
+    ============================================ */
+    .second-prompt-block {
+      margin-top: 16px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease;
+    }
+
+    .second-prompt-block.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .second-prompt-block.hidden {
+      display: none;
+    }
+
+    .witty-text {
+      color: var(--terminal-yellow);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    /* ============================================
+       MENU
+    ============================================ */
+    .menu-block {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease;
+    }
+
+    .menu-block.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .menu-block.hidden {
+      display: none;
+    }
+
+    .menu-entry {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .menu-entry .indicator {
+      width: 20px;
+      color: var(--terminal-text);
+      opacity: 0.4;
+      margin-right: 8px;
+    }
+
+    .menu-entry .indicator-filled { display: none; }
+
+    .menu-entry.selected .indicator-empty { display: none; }
+    .menu-entry.selected .indicator-filled { display: inline; color: var(--terminal-green); }
+
+    .menu-entry .menu-text { color: var(--terminal-text); }
+    .menu-entry.selected .menu-text { color: var(--terminal-bright); }
+
+    .menu-entry .menu-hint {
+      margin-left: auto;
+      color: #444;
+      font-size: 12px;
+    }
+
+    .menu-entry.selected .menu-hint { color: #666; }
+
+    /* Experience sub-menu: company vs role */
+    .menu-company {
+      color: var(--terminal-bright);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .menu-sep {
+      color: #3a3a3a;
+      margin: 0 10px;
+      font-size: 13px;
+    }
+
+    .menu-role {
+      color: var(--terminal-cyan);
+      font-size: 12px;
+      font-style: italic;
+      opacity: 0.75;
+    }
+
+    .menu-entry.selected .menu-company { color: var(--terminal-bright); }
+    .menu-entry.selected .menu-role { color: var(--terminal-yellow); opacity: 1; font-style: normal; }
+
+    .exp-breadcrumb {
+      font-size: 11px;
+      color: #555;
+      padding: 2px 0 10px 28px;
+      border-bottom: 1px dashed #222;
+      margin-bottom: 6px;
+    }
+
+    /* ============================================
+       CONTENT SECTION
+    ============================================ */
+    .content-view {
+      display: none;
+    }
+
+    .content-view.active {
+      display: block;
+      animation: contentFadeIn 0.3s ease;
+    }
+
+    @keyframes contentFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .content-header {
+      border-bottom: 1px solid #333;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .content-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--terminal-bright);
+      margin-bottom: 4px;
+    }
+
+    .content-path {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .content-body {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--terminal-text);
+    }
+
+    .content-body h3 {
+      color: var(--terminal-cyan);
+      font-size: 13px;
+      font-weight: 600;
+      margin: 20px 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .content-body p { margin: 8px 0; }
+
+    .content-body ul {
+      list-style: none;
+      margin: 8px 0;
+    }
+
+    .content-body li {
+      padding: 4px 0 4px 16px;
+      position: relative;
+    }
+
+    .content-body li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--terminal-green);
+    }
+
+    .back-hint {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px dashed #333;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .back-hint kbd {
+      background: #222;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    /* ============================================
+       MODAL
+    ============================================ */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      background: var(--terminal-bg);
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 32px 40px;
+      max-width: 400px;
+      text-align: center;
+      animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-icon { font-size: 64px; margin-bottom: 16px; }
+
+    .modal-title {
+      font-size: 16px;
+      color: var(--terminal-bright);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .modal-text {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-btn {
+      background: transparent;
+      border: 1px solid var(--terminal-red);
+      color: var(--terminal-red);
+      padding: 10px 24px;
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 0 4px;
+    }
+
+    .modal-btn:hover {
+      background: var(--terminal-red);
+      color: var(--terminal-bg);
+    }
+
+    .modal-btn.secondary {
+      border-color: #555;
+      color: #888;
+    }
+
+    .modal-btn.secondary:hover {
+      background: #333;
+      color: var(--terminal-bright);
+    }
+
+    /* ============================================
+       MATRIX
+    ============================================ */
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999;
+      display: none;
+      pointer-events: none;
+    }
+
+    #matrix-canvas.active { display: block; }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .terminal-window {
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+      }
+      .ascii-art { font-size: 5px; }
+      .terminal-body { padding: 16px; }
+    }
+
+    /* Hobby grid */
+    .hobby-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px 22px;
+      margin: 18px 0;
+      align-items: flex-start;
+    }
+
+    .hobby-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .hobby-svg {
+      display: block;
+      opacity: 0.82;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .hobby-card:hover .hobby-svg {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+
+    .hobby-label {
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      text-align: center;
+    }
+
+    .hobby-desc {
+      font-size: 10px;
+      color: #3a3a3a;
+      margin-top: 3px;
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* Experience detail badges */
+    .exp-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 9px;
+      border-radius: 3px;
+      border: 1px solid;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .exp-bullet {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .exp-bullet-tag {
+      flex-shrink: 0;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid;
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .exp-bullet p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--terminal-text);
+    }
+
+    /* Solar Carousel */
+    .carousel-slide { opacity: 1; transition: opacity 0.4s ease; }
+
+    .result-img-wrap {
+      margin-top: 28px;
+    }
+
+    .result-img-wrap img {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+      border: 1px solid #222;
+    }
+
+    .result-img-caption {
+      font-size: 11px;
+      color: #555;
+      margin-top: 8px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Contact links */
+    .contact-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #1e1e1e;
+    }
+
+    .contact-line:last-child { border-bottom: none; }
+
+    .contact-key {
+      color: var(--terminal-cyan);
+      font-size: 12px;
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    .contact-val {
+      color: var(--terminal-bright);
+      font-size: 13px;
+    }
+
+    .contact-val a {
+      color: var(--terminal-blue);
+      text-decoration: none;
+    }
+
+    .contact-val a:hover { text-decoration: underline; }
+
+    ::selection { background: var(--terminal-green); color: var(--terminal-bg); }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+
+  <!-- Modal: Close Attempt -->
+  <div class="modal-overlay" id="modal-close">
+    <div class="modal-box">
+      <div class="modal-icon">😤</div>
+      <div class="modal-title">Nice Try!</div>
+      <div class="modal-text">
+        You cannot close this terminal!<br>
+        You're staying here until you've explored everything. 😈<br><br>
+        <span style="font-size: 11px; color: #555;">(Just kidding... but seriously, keep exploring!)</span>
+      </div>
+      <button class="modal-btn" onclick="closeModal('modal-close')">Fine, I'll Stay 😒</button>
+    </div>
+  </div>
+
+  <!-- Modal: Minimize Attempt -->
+  <div class="modal-overlay" id="modal-minimize">
+    <div class="modal-box">
+      <div class="modal-icon">🙄</div>
+      <div class="modal-title">Minimize? Dream On.</div>
+      <div class="modal-text">
+        This terminal cannot be minimized!<br>
+        Emma's profile deserves your FULL, undivided attention. 👀<br><br>
+        <span style="font-size: 11px; color: #555;">(Nice try though, very creative 🎨)</span>
+      </div>
+      <button class="modal-btn secondary" onclick="closeModal('modal-minimize')">Okay, Okay... 🙄</button>
+    </div>
+  </div>
+
+  <!-- Modal: Rejection -->
+  <div class="modal-overlay" id="modal-reject">
+    <div class="modal-box">
+      <div class="modal-icon">😤</div>
+      <div class="modal-title">HEY! That's not 'y'!</div>
+      <div class="modal-text">
+        You have to type <strong style="color: var(--terminal-green);">y</strong> to continue...<br>
+        Don't you WANT to know about me?!<br><br>
+        <span style="font-size: 11px; color: #555;">(Just kidding, but please type 'y' to proceed)</span>
+      </div>
+      <button class="modal-btn" onclick="retryInput()">Okay Fine, I'll Type 'y'</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-reject')">No Thanks</button>
+    </div>
+  </div>
+
+  <!-- Main Terminal Window -->
+  <div class="terminal-window">
+    <div class="window-header">
+      <div class="traffic-lights">
+        <div class="traffic-light red" onclick="handleTrafficLight('close')" title="Close (just kidding 😈)"></div>
+        <div class="traffic-light yellow" onclick="handleTrafficLight('minimize')" title="Minimize (you wish 😏)"></div>
+        <div class="traffic-light green" onclick="handleTrafficLight('maximize')" title="Full-screen magic ✨"></div>
+      </div>
+      <div class="window-title">Emma's Personal Profile — bash — 80×24</div>
+    </div>
+
+    <div class="terminal-body" id="terminal-body">
+      
+      <!-- Line 1: Command -->
+      <div class="terminal-line" id="line1">
+        <span class="prompt-user">EmmaZhuo</span><span class="prompt-path">@personal-profile</span><span class="prompt-path">:~$</span>
+        <span class="prompt-symbol"> </span>
+        <span class="command-text" id="cmd1-text"></span>
+        <span class="typing-cursor" id="cursor1"></span>
+      </div>
+
+      <!-- ASCII Banner Block -->
+      <div class="ascii-block" id="ascii-block">
+        <pre class="ascii-art">
+██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
+██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
+██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗
+██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝
+╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗
+ ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
+        </pre>
+        <div class="version-tag">[ Interactive Personal Profile Terminal v1.0.0 ]</div>
+        <p class="welcome-text"style="color: white;">Welcome! You've entered Emma's personal profile terminal.</p>
+        <p class="welcome-text"style="color: white;">Use this interactive terminal to learn more about me.</p>
+      </div>
+
+      <!-- Interactive Block -->
+      <div class="interactive-block" id="interactive-block">
+        <div class="yn-prompt">
+          <span class="yn-text">Do you want to know more about me? </span><span class="yn-bracket">[y/n]</span><span> </span><span class="input-display" id="input-display"></span><span class="typing-cursor" id="input-cursor"></span>
+        </div>
+        <div class="choice-hint" style="margin-top: 6px;">
+          Press <kbd>y</kbd> to continue · <kbd>n</kbd> to boldly go where curiosity goes to die
+        </div>
+      </div>
+
+      <!-- Second Prompt & Menu Block -->
+      <div class="second-prompt-block hidden" id="second-block">
+        <div class="witty-text" style="margin-top: 16px;">✨ Ooh, curious are we? Here's what you can explore — use <kbd style="background:#222;padding:1px 5px;border-radius:3px;font-size:11px;color:#ccc;">↑</kbd> <kbd style="background:#222;padding:1px 5px;border-radius:3px;font-size:11px;color:#ccc;">↓</kbd> to navigate, <kbd style="background:#222;padding:1px 5px;border-radius:3px;font-size:11px;color:#ccc;">Enter</kbd> to open:</div>
+      </div>
+
+      <!-- Menu -->
+      <div class="menu-block hidden" id="menu-block">
+        <div class="menu-entry selected" data-section="about">
+          <span class="indicator">
+            <span class="indicator-empty">○</span>
+            <span class="indicator-filled">●</span>
+          </span>
+          <span class="menu-text">About Me</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-section="experiences">
+          <span class="indicator">
+            <span class="indicator-empty">○</span>
+            <span class="indicator-filled">●</span>
+          </span>
+          <span class="menu-text">Experiences</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-section="projects">
+          <span class="indicator">
+            <span class="indicator-empty">○</span>
+            <span class="indicator-filled">●</span>
+          </span>
+          <span class="menu-text">Projects</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-section="hobbies">
+          <span class="indicator">
+            <span class="indicator-empty">○</span>
+            <span class="indicator-filled">●</span>
+          </span>
+          <span class="menu-text">Skills & Interest</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-section="contact">
+          <span class="indicator">
+            <span class="indicator-empty">○</span>
+            <span class="indicator-filled">●</span>
+          </span>
+          <span class="menu-text">Contact</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+      </div>
+
+      <!-- Experiences Sub-Menu -->
+      <div class="menu-block hidden" id="exp-menu-block">
+        <div class="exp-breadcrumb">
+          <span style="color:#444;">~/</span><span style="color:#666;">Experiences</span>
+          <span style="color:#444; margin-left:12px;">— pick one to learn more</span>
+        </div>
+        <div class="menu-entry selected" data-expsection="sensetime">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">SenseTime</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">AI Product Intern</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-expsection="gair">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">GAIR Lab</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">Research Assistant</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-expsection="tiktok">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">TikTok</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">Data Analyst Intern</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-expsection="kidney">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">Kidney Transplant QS</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">Research Assistant</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+	<div class="menu-entry" data-expsection="solar">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">U-M Solar Car Team</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">Operations Team Member</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div style="margin-top:14px; font-size:11px; color:#444; padding-left:28px;">
+          Press <kbd style="background:#1e1e1e;padding:1px 5px;border-radius:3px;color:#777;border:1px solid #333;">Esc</kbd> to go back
+        </div>
+      </div>
+
+      <!-- Projects Sub-Menu -->
+      <div class="menu-block hidden" id="projects-menu-block">
+        <div class="exp-breadcrumb">
+          <span style="color:#444;">~/</span><span style="color:#666;">Projects</span>
+          <span style="color:#444; margin-left:12px;">— pick one to learn more</span>
+        </div>
+        <div class="menu-entry selected" data-projsection="electric-trading">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">Demand Response Electric Trading</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">System Design</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+	<div class="menu-entry" data-projsection="optimization">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">Investigation on Optimization Methods</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">Theoretical Research</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-projsection="video-calling">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">Freely-Chat</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">Video Calling Platform</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div class="menu-entry" data-projsection="music-for-now">
+          <span class="indicator"><span class="indicator-empty">○</span><span class="indicator-filled">●</span></span>
+          <span class="menu-company">Music for Now</span>
+          <span class="menu-sep">/</span>
+          <span class="menu-role">App</span>
+          <span class="menu-hint">[Enter]</span>
+        </div>
+        <div style="margin-top:14px; font-size:11px; color:#444; padding-left:28px;">
+          Press <kbd style="background:#1e1e1e;padding:1px 5px;border-radius:3px;color:#777;border:1px solid #333;">Esc</kbd> to go back
+        </div>
+      </div>
+
+      <!-- Content Views -->
+      <div class="content-view" id="content-about">
+        <div class="content-header">
+          <div class="content-title">📄 About Me</div>
+          <div class="content-path">~/Emma's Personal Profile/about.md</div>
+        </div>
+        <div class="content-body">
+          <h3>Introduction</h3>
+          <p>[Your introduction will appear here]</p>
+          
+          <h3>Education</h3>
+          <ul>
+            <li>[Degree] - [University], [Year]</li>
+          </ul>
+          
+          <h3>Quick Stats</h3>
+          <ul>
+            <li>Status: [Student/Professional]</li>
+            <li>Location: [City, Country]</li>
+            <li>Languages: [Language 1], [Language 2], ...</li>
+          </ul>
+        </div>
+        <div class="back-hint">
+          Press <kbd>Esc</kbd> to go back to menu
+        </div>
+      </div>
+
+      <div class="content-view" id="content-experiences">
+        <div class="content-header">
+          <div class="content-title">💼 Experiences</div>
+          <div class="content-path">~/Emma's Personal Profile/experiences.md</div>
+        </div>
+        <div class="content-body">
+          <h3>Work Experience</h3>
+          <ul>
+            <li>[Company/Role 1] - [Duration]</li>
+            <li>[Company/Role 2] - [Duration]</li>
+          </ul>
+          
+          <h3>Academic Projects</h3>
+          <ul>
+            <li>[Project 1] - [Brief description]</li>
+            <li>[Project 2] - [Brief description]</li>
+          </ul>
+          
+          <h3>Achievements</h3>
+          <ul>
+            <li>[Achievement 1]</li>
+            <li>[Achievement 2]</li>
+          </ul>
+        </div>
+        <div class="back-hint">
+          Press <kbd>Esc</kbd> to go back to menu
+        </div>
+      </div>
+
+      <!-- Experience detail views -->
+      <div class="content-view" id="content-exp-sensetime">
+        <div class="content-header">
+          <div class="content-title">💼 SenseTime &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">AI Product Intern</span></div>
+          <div class="content-path">~/Experiences/sensetime.md</div>
+        </div>
+        <div class="content-body">
+          <p>[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Experiences</div>
+      </div>
+
+      <div class="content-view" id="content-exp-gair">
+        <div class="content-header">
+          <div class="content-title">🔬 GAIR Lab &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">Research Assistant</span></div>
+          <div class="content-path">~/Experiences/gair-lab.md &nbsp;·&nbsp; Nov 2024 – Jan 2025 &nbsp;·&nbsp; Shanghai</div>
+        </div>
+        <div class="content-body">
+
+          <!-- Lead paragraph -->
+          <p style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:17px; line-height:1.9; color:rgba(250,248,245,0.92); margin-bottom:28px;">
+            Designed and iterated <span style="color:var(--terminal-green); font-weight:600;">prompting frameworks</span> for an autonomous reasoning agent targeting Chinese <span style="color:var(--terminal-cyan);">College Entrance Examination</span> multi-subject tasks. The work spanned prompt engineering, benchmark construction, and automated evaluation — pushing overall task accuracy up by <span style="color:var(--terminal-green); font-weight:700; font-size:19px;">nearly 50%</span>.
+          </p>
+
+          <!-- ═══════ SECTION 1: Iterative Enhancement Loop (2×2 grid) ═══════ -->
+          <div style="margin-bottom:32px;">
+            <h3 style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--terminal-bright); letter-spacing:0.3px; margin-bottom:18px;">Iterative Enhancement Loop</h3>
+            
+            <!-- 2×2 grid container -->
+            <div style="position:relative; display:inline-block; width:100%; max-width:640px; left:50%; transform:translateX(-50%);">
+              
+              <!-- SVG overlay for arrows (absolute positioned behind boxes) -->
+              <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;" viewBox="0 0 640 240" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <marker id="arrG" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#33D1A4"/></marker>
+                  <marker id="arrP" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#FFB6C1"/></marker>
+                  <marker id="arrY" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#FFDB59"/></marker>
+                  <marker id="arrC" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#56CFFF"/></marker>
+                  <marker id="arrR" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#888"/></marker>
+                </defs>
+                
+                <!-- Arrow 1→2 (top row, left→right, green) -->
+                <line x1="179" y1="58" x2="239" y2="58" stroke="#33D1A4" stroke-width="1.8" marker-end="url(#arrG)"/>
+                <!-- Arrow 2↓4 (right col, top→bottom, pink) -->
+                <line x1="428" y1="96" x2="428" y2="150" stroke="#FFB6C1" stroke-width="1.8" marker-end="url(#arrP)"/>
+                <!-- Arrow 4←3 (bottom row, right→left, cyan) -->
+                <line x1="239" y1="182" x2="179" y2="182" stroke="#56CFFF" stroke-width="1.8" marker-end="url(#arrC)"/>
+                <!-- Arrow 3↑1 (left col, bottom→top, yellow) -->
+                <line x1="90" y1="150" x2="90" y2="96" stroke="#FFDB59" stroke-width="1.8" marker-end="url(#arrY)"/>
+                
+                <!-- Loop number labels on arrows -->
+                <text x="209" y="50" fill="#33D1A4" font-size="9" font-family="'JetBrains Mono',monospace" text-anchor="middle">1</text>
+                <text x="442" y="126" fill="#FFB6C1" font-size="9" font-family="'JetBrains Mono',monospace" text-anchor="middle">2</text>
+                <text x="209" y="196" fill="#56CFFF" font-size="9" font-family="'JetBrains Mono',monospace" text-anchor="middle">3</text>
+                <text x="76" y="126" fill="#FFDB59" font-size="9" font-family="'JetBrains Mono',monospace" text-anchor="middle">4</text>
+              </svg>
+              
+              <!-- Row 1: Step 1 + Step 2 -->
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:0; position:relative; z-index:2;">
+                
+                <!-- Step 1: Benchmark Evaluation (top-left) -->
+                <div style="flex:0 0 175px; padding:16px 14px; border:1px solid rgba(51,209,122,0.3); border-radius:8px; background:linear-gradient(135deg, rgba(51,209,122,0.08) 0%, rgba(51,209,122,0.02) 100%); text-align:center; margin-right:4px;">
+                  <div style="font-size:9px; color:var(--terminal-green); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; font-weight:700;">STEP 1</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--terminal-bright); margin-bottom:5px;">Benchmark<br/>Evaluation</div>
+                  <div style="font-size:10px; line-height:1.55; color:rgba(250,248,245,0.6);">Evaluate model on test set → identify weaknesses</div>
+                </div>
+                
+                <!-- Spacer in middle -->
+                <div style="flex:0 0 60px;"></div>
+                
+                <!-- Step 2: Data (Error) Analysis (top-right) -->
+                <div style="flex:0 0 175px; padding:16px 14px; border:1px solid rgba(255,182,193,0.3); border-radius:8px; background:linear-gradient(135deg, rgba(255,182,193,0.08) 0%, rgba(255,182,193,0.02) 100%); text-align:center; margin-left:4px;">
+                  <div style="font-size:9px; color:#FFB6C1; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; font-weight:700;">STEP 2</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--terminal-bright); margin-bottom:5px;">Data (Error)<br/>Analysis</div>
+                  <div style="font-size:10px; line-height:1.55; color:rgba(250,248,245,0.6);">Analyze wrong answers → pinpoint reasoning gaps</div>
+                </div>
+              </div>
+              
+              <!-- Vertical spacer with row labels -->
+              <div style="display:flex; justify-content:space-between; align-items:center; min-height:22px; padding:0;">
+                <div style="flex:0 0 175px; text-align:right;"></div>
+                <div style="flex:0 0 60px;"></div>
+                <div style="flex:0 0 175px; text-align:left;"></div>
+              </div>
+              
+              <!-- Row 2: Step 3 + Step 4 -->
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:0; position:relative; z-index:2;">
+                
+                <!-- Step 3: Data Selection (bottom-left) -->
+                <div style="flex:0 0 175px; padding:16px 14px; border:1px solid rgba(255,215,89,0.3); border-radius:8px; background:linear-gradient(135deg, rgba(255,215,89,0.08) 0%, rgba(255,215,89,0.02) 100%); text-align:center; margin-right:4px;">
+                  <div style="font-size:9px; color:var(--terminal-yellow); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; font-weight:700;">STEP 3</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--terminal-bright); margin-bottom:5px;">Data<br/>Selection</div>
+                  <div style="font-size:10px; line-height:1.55; color:rgba(250,248,245,0.6);">Select new training data targeting weak points</div>
+                </div>
+                
+                <!-- Spacer in middle -->
+                <div style="flex:0 0 60px;"></div>
+                
+                <!-- Step 4: Model Implementation (bottom-right) -->
+                <div style="flex:0 0 175px; padding:16px 14px; border:1px solid rgba(86,207,255,0.3); border-radius:8px; background:linear-gradient(135deg, rgba(86,207,255,0.08) 0%, rgba(86,207,255,0.02) 100%); text-align:center; margin-left:4px;">
+                  <div style="font-size:9px; color:var(--terminal-cyan); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; font-weight:700;">STEP 4</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--terminal-bright); margin-bottom:5px;">Model<br/>Implementation</div>
+                  <div style="font-size:10px; line-height:1.55; color:rgba(250,248,245,0.6);">Run model → apply prompt tweaks → next round</div>
+                </div>
+              </div>
+              
+            </div>
+            
+            <!-- Loop label -->
+            <div style="text-align:center; margin-top:10px;">
+              <span style="font-size:10px; color:#555; letter-spacing:1px; font-family:'JetBrains Mono',monospace;">⟳  iterate until convergence</span>
+            </div>
+          </div>
+
+          <!-- ═══════ SECTION 2: Prompt Engineering Table (real data) ═══════ -->
+          <div style="margin-bottom:32px;">
+            <h3 style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--terminal-bright); letter-spacing:0.3px; margin-bottom:14px;">Prompt Engineering</h3>
+            <p style="font-size:12px; color:rgba(250,248,245,0.65); margin-bottom:14px; line-height:1.6;">Adaptive prompting strategies per question type. Real evaluation log across 25 test items tracking performance under different input modes.</p>
+            
+            <div style="overflow-x:auto; border:1px solid #222; border-radius:6px;">
+              <table style="width:100%; border-collapse:collapse; font-size:11.5px; font-family:'JetBrains Mono',monospace;">
+                <thead>
+                  <tr style="background:#1a1a1e;">
+                    <th style="padding:10px 12px; text-align:center; color:var(--terminal-cyan); font-weight:600; border-bottom:2px solid #333; font-size:10px; letter-spacing:1px;">id</th>
+                    <th style="padding:10px 12px; text-align:center; color:var(--terminal-yellow); font-weight:600; border-bottom:2px solid #333; font-size:10px; letter-spacing:1px;">text only</th>
+                    <th style="padding:10px 12px; text-align:center; color:var(--terminal-green); font-weight:600; border-bottom:2px solid #333; font-size:10px; letter-spacing:1px;">test + image</th>
+                    <th style="padding:10px 12px; text-align:center; color:var(--terminal-bright); font-weight:600; border-bottom:2px solid #333; font-size:10px; letter-spacing:1px;">caption</th>
+                    <th colspan="2" style="padding:10px 12px; text-align:center; color:var(--terminal-red); font-weight:600; border-bottom:2px solid #333; font-size:10px; letter-spacing:1px;">caption performance</th>
+                  </tr>
+                  <tr style="background:#151518; font-size:9.5px;">
+                    <th colspan="4" style="padding:6px 12px;"></th>
+                    <th style="padding:6px 12px; text-align:center; color:rgba(255,107,107,0.7); border-bottom:1px solid #2a2a2e;">completeness</th>
+                    <th style="padding:6px 12px; text-align:center; color:rgba(255,107,107,0.7); border-bottom:1px solid #2a2a2e;">correctness</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">1</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(255,215,89,0.12);color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">2</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(255,215,89,0.12);color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">3</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td rowspan="4" style="padding:7px 12px;text-align:center;background:rgba(255,215,89,0.08);color:var(--terminal-green);vertical-align:middle;border-left:1px dashed #333;">✓</td><td rowspan="4" style="padding:7px 12px;text-align:center;vertical-align:middle;border-left:1px dashed #333;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">4</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">5</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">6</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">7</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">8</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">9</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td rowspan="3" style="padding:7px 12px;text-align:center;background:rgba(255,215,89,0.08);color:var(--terminal-green);vertical-align:middle;border-left:1px dashed #333;">✓</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">10</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">11</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">12</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">13</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(255,182,193,0.2);color:var(--terminal-yellow);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">14</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">15</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(255,182,193,0.2);color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">16</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">17</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">18</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(255,182,193,0.2);color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(255,182,193,0.2);color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">19</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td rowspan="2" style="padding:7px 12px;text-align:center;background:rgba(255,215,89,0.08);vertical-align:middle;border-left:1px dashed #333;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">20</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">21</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">22</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(255,182,193,0.2);color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;"><td style="padding:7px 12px;text-align:center;color:#555;">23</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-green);">✓</td></tr>
+                  <tr style="border-bottom:1px solid #1e1e1e;background:rgba(40,40,45,0.4);"><td style="padding:7px 12px;text-align:center;color:#555;">24</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:7px 12px;text-align:center;background:rgba(51,209,122,0.2);color:var(--terminal-green);font-weight:600;">✓</td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:7px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                  <tr style="background:rgba(51,209,122,0.05);"><td style="padding:10px 12px;text-align:center;color:var(--terminal-green);font-weight:700;font-size:12px;">25</td><td style="padding:10px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:10px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:10px 12px;text-align:center;color:var(--terminal-red);">✗</td><td style="padding:10px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td><td style="padding:10px 12px;text-align:center;color:rgba(250,248,245,0.3);"></td></tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Summary stats -->
+            <div style="display:flex; gap:16px; margin-top:12px; font-size:11px; font-family:'JetBrains Mono',monospace;">
+              <div style="flex:1; padding:10px 14px; border:1px solid #222; border-radius:4px; background:rgba(51,209,122,0.04);">
+                <span style="color:#555;">caption mode accuracy:</span>&nbsp;<span style="color:var(--terminal-green); font-weight:700;">~68%</span>&nbsp;<span style="color:#444;">(17/25)</span>
+              </div>
+              <div style="flex:1; padding:10px 14px; border:1px solid #222; border-radius:4px; background:rgba(255,215,89,0.04);">
+                <span style="color:#555;">vs text-only baseline:</span>&nbsp;<span style="color:var(--terminal-yellow); font-weight:700;">+42pp</span>&nbsp;<span style="color:#444;">(27%→68%)</span>
+              </div>
+              <div style="flex:1; padding:10px 14px; border:1px solid #222; border-radius:4px; background:rgba(86,207,255,0.04);">
+                <span style="color:#555;">key insight:</span>&nbsp;<span style="color:var(--terminal-cyan);">caption input consistently outperforms raw text</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════ SECTION 3: Evaluation Workflow ═══════ -->
+          <div style="margin-bottom:28px;">
+            <h3 style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--terminal-bright); letter-spacing:0.3px; margin-bottom:16px;">Evaluation</h3>
+            
+            <p style="font-family:'Noto Serif SC',serif; font-size:13px; line-height:1.8; color:rgba(250,248,245,0.75); margin-bottom:18px;">
+              Constructed benchmark datasets from publicly available examination problems. Designed a <span style="color:var(--terminal-yellow); font-weight:600;">dual-layer evaluation system</span>: an automated scoring agent with a well-defined scoring rubric, combined with human review to ensure reliability and catch edge cases.
+            </p>
+            
+            <!-- Two-card layout: Auto Grader + Human Review -->
+            <div style="display:flex; gap:16px; margin-bottom:18px;">
+              
+              <!-- Card 1: Automated Scoring Agent -->
+              <div style="flex:1; padding:18px; border:1px solid rgba(51,209,122,0.2); border-left:3px solid var(--terminal-green); border-radius:6px; background:linear-gradient(135deg, rgba(51,209,122,0.04), transparent);">
+                <div style="font-size:9px; color:var(--terminal-green); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; font-weight:700;">Automated Scorer</div>
+                <div style="font-size:13px; font-weight:700; color:var(--terminal-bright); margin-bottom:8px;">Grading Agent</div>
+                <div style="font-size:11.5px; line-height:1.7; color:rgba(250,248,245,0.72);">
+                  Built a secondary LLM agent as an automated grader. Designed a <span style="color:var(--terminal-cyan);">detailed scoring rubric</span> covering completeness and correctness dimensions. Applied to all 25 test items for scalable, reproducible evaluation.
+                </div>
+              </div>
+              
+              <!-- Card 2: Human Review -->
+              <div style="flex:1; padding:18px; border:1px solid rgba(86,207,255,0.2); border-left:3px solid var(--terminal-cyan); border-radius:6px; background:linear-gradient(135deg, rgba(86,207,255,0.04), transparent);">
+                <div style="font-size:9px; color:var(--terminal-cyan); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; font-weight:700;">Human Review</div>
+                <div style="font-size:13px; font-weight:700; color:var(--terminal-bright); margin-bottom:8px;">Expert Validation</div>
+                <div style="font-size:11.5px; line-height:1.7; color:rgba(250,248,245,0.72);">
+                  Cross-checked automated scores through <span style="color:var(--terminal-yellow);">manual spot-checking</span> by human experts. Flagged ambiguous cases and calibrated the rubric iteratively to minimize scoring drift.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Connecting flow: Auto → Human -->
+            <div style="text-align:center; margin-bottom:18px;">
+              <div style="display:inline-flex; align-items:center; gap:12px; font-size:11px; color:#555; font-family:'JetBrains Mono',monospace;">
+                <span style="color:var(--terminal-green);">auto score</span>
+                <svg width="32" height="14" viewBox="0 0 32 14"><line x1="0" y1="7" x2="26" y2="7" stroke="#555" stroke-width="1.5" marker-end="url(#arr1)"/><defs><marker id="arr1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#555"/></marker></defs></svg>
+                <span style="color:var(--terminal-cyan);">human check</span>
+                <svg width="32" height="14" viewBox="0 0 32 14"><line x1="0" y1="7" x2="26" y2="7" stroke="#555" stroke-width="1.5" marker-end="url(#arr1)"/><defs><marker id="arr1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#555"/></marker></defs></svg>
+                <span style="color:var(--terminal-yellow);">rubric update</span>
+              </div>
+            </div>
+            
+            
+          </div>
+
+          <!-- ═══════ SECTION 4: Final Result ═══════ -->
+          <div style="margin-bottom:28px;">
+            <h3 style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--terminal-bright); letter-spacing:0.3px; margin-bottom:16px;">Final Result</h3>
+            
+            <div style="display:flex; gap:28px; align-items:flex-start;">
+              
+              <!-- Left: Score Improvement -->
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; padding:24px 20px; border:1px solid rgba(51,209,122,0.25); border-radius:8px; background:linear-gradient(135deg, rgba(51,209,122,0.05), rgba(86,207,255,0.02));">
+                <div style="font-size:9px; color:#555; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; font-weight:700;">2025 Math Exam Score</div>
+                
+                <!-- Score display: 132 → 145 -->
+                <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:4px;">
+                  <div style="text-align:center;">
+                    <div style="font-size:36px; font-weight:800; color:rgba(250,248,245,0.4); font-family:'JetBrains Mono',monospace; line-height:1;">132</div>
+                    <div style="font-size:10px; color:#555; margin-top:4px;">before</div>
+                  </div>
+                  <svg width="28" height="20" viewBox="0 0 28 20" style="flex-shrink:0;"><defs><marker id="arrFR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#33D1A4"/></marker></defs><line x1="0" y1="10" x2="22" y2="10" stroke="#33D1A4" stroke-width="2" marker-end="url(#arrFR)"/></svg>
+                  <div style="text-align:center;">
+                    <div style="font-size:36px; font-weight:800; color:var(--terminal-green); font-family:'JetBrains Mono',monospace; line-height:1;">145</div>
+                    <div style="font-size:10px; color:#555; margin-top:4px;">after</div>
+                  </div>
+                </div>
+                
+                <!-- Divider -->
+                <div style="width:60px; height:1px; background:#333; margin:14px 0;"></div>
+                
+                <!-- Progress bar from 132 to 145 -->
+                <div style="width:100%; margin-bottom:8px;">
+                  <!-- Background track -->
+                  <div style="height:10px; background:#1a1a1e; border-radius:5px; overflow:hidden; border:1px solid #2a2a2e;">
+                    <!-- Before bar (132/150 = 88%) -->
+                    <div style="width:88%; height:100%; background:rgba(250,248,245,0.15); display:inline-block;"></div>
+                    <!-- After bar (145/150 = 96.67%) -->
+                    <div style="width:96.67%; height:100%; background:var(--terminal-green); display:inline-block; margin-left:-88%;"></div>
+                  </div>
+                  <!-- Scale labels -->
+                  <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:9px; color:#444; font-family:'JetBrains Mono',monospace;">
+                    <span>0</span><span>50</span><span>100</span><span>132</span><span style="color:var(--terminal-green);">145</span><span>150</span>
+                  </div>
+                </div>
+                
+                <!-- Score improvement callout -->
+                <div style="margin-top:12px; text-align:center;">
+                  <div style="font-size:11px; color:#555; margin-bottom:4px;">score gain</div>
+                  <div style="font-size:22px; font-weight:800; color:var(--terminal-green); font-family:'JetBrains Mono',monospace; letter-spacing:-0.5px;">+<span style="font-size:28px;">13</span></div>
+                  <div style="font-size:11px; color:#555; margin-top:2px;">out of 150</div>
+                </div>
+              </div>
+              
+              <!-- Right: Bar Chart -->
+              <div style="flex:1; min-width:0; padding:24px 20px; border:1px solid rgba(86,207,255,0.2); border-radius:8px; background:linear-gradient(135deg, rgba(86,207,255,0.04), transparent);">
+                <div style="font-size:9px; color:#555; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; font-weight:700;">Model Comparison · 2025 Math</div>
+                
+                <!-- Bar chart via SVG -->
+                <div style="font-size:11px; font-family:'JetBrains Mono',monospace;">
+                  
+                  <!-- Ours (145) -->
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="width:90px; flex-shrink:0; text-align:right; font-size:10.5px; color:var(--terminal-bright);">Ours</div>
+                    <div style="flex:1; height:20px; background:#1a1a1e; border-radius:3px; overflow:hidden; position:relative;">
+                      <div style="height:100%; width:96.67%; background:var(--terminal-green); border-radius:3px; display:flex; align-items:center; padding-left:6px;">
+                        <span style="font-size:10px; color:#000; font-weight:700;">145</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- GLM Zero-Preview (138) -->
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="width:90px; flex-shrink:0; text-align:right; font-size:10.5px; color:rgba(250,248,245,0.55);">GLM Zero-Pv</div>
+                    <div style="flex:1; height:20px; background:#1a1a1e; border-radius:3px; overflow:hidden;">
+                      <div style="height:100%; width:92%; background:rgba(86,207,255,0.55); border-radius:3px; display:flex; align-items:center; padding-left:6px;">
+                        <span style="font-size:10px; color:#fff;">138</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- qwq (127) -->
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="width:90px; flex-shrink:0; text-align:right; font-size:10.5px; color:rgba(250,248,245,0.55);">qwq</div>
+                    <div style="flex:1; height:20px; background:#1a1a1e; border-radius:3px; overflow:hidden;">
+                      <div style="height:100%; width:84.67%; background:rgba(255,215,89,0.55); border-radius:3px; display:flex; align-items:center; padding-left:6px;">
+                        <span style="font-size:10px; color:#fff;">127</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- deepseek-r1-lite (112) -->
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="width:90px; flex-shrink:0; text-align:right; font-size:10.5px; color:rgba(250,248,245,0.55);">deepseek-r1</div>
+                    <div style="flex:1; height:20px; background:#1a1a1e; border-radius:3px; overflow:hidden;">
+                      <div style="height:100%; width:74.67%; background:rgba(255,182,193,0.5); border-radius:3px; display:flex; align-items:center; padding-left:6px;">
+                        <span style="font-size:10px; color:#fff;">112</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- kimi (100) -->
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                    <div style="width:90px; flex-shrink:0; text-align:right; font-size:10.5px; color:rgba(250,248,245,0.55);">kimi</div>
+                    <div style="flex:1; height:20px; background:#1a1a1e; border-radius:3px; overflow:hidden;">
+                      <div style="height:100%; width:66.67%; background:rgba(255,107,107,0.45); border-radius:3px; display:flex; align-items:center; padding-left:6px;">
+                        <span style="font-size:10px; color:#fff;">100</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          
+
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Experiences</div>
+      </div>
+
+      <div class="content-view" id="content-exp-tiktok">
+        <div class="content-header">
+          <div class="content-title">📊 TikTok &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">Data Analyst Intern</span></div>
+          <div class="content-path">~/Experiences/tiktok.md</div>
+        </div>
+        <div class="content-body">
+          <p>[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Experiences</div>
+      </div>
+
+      <div class="content-view" id="content-exp-kidney">
+        <div class="content-header">
+          <div class="content-title">🏥 Kidney Transplant QS Design &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">Research Assistant</span></div>
+          <div class="content-path">~/Experiences/kidney-transplant-qs.md</div>
+        </div>
+        <div class="content-body">
+          <p>[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Experiences</div>
+      </div>
+
+      <div class="content-view" id="content-exp-solar">
+        <div class="content-header">
+          <div class="content-title">🏎️ U-M Solar Car Team &nbsp;<span style="color:#FFCB05;font-size:13px;font-style:italic;font-weight:400;">Operations Team Member</span></div>
+          <div class="content-path">~/Experiences/solar-car-team.md &nbsp;·&nbsp; Sep 2024 – Present</div>
+        </div>
+        <div class="content-body">
+
+          <!-- Lead paragraph -->
+          <p style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:17px; line-height:1.9; color:rgba(250,248,245,0.92); margin-bottom:28px;">
+            Part of the <span style="color:#FFCB05; font-weight:600;">University of Michigan Solar Car Team</span>, one of the largest and most successful student-run solar racing programs in the world. Our team designs, builds, and races competition-grade solar vehicles — driving innovation on and off the track.
+          </p>
+
+          <!-- ═══════ Photo Carousel (3D Perspective) ═══════ -->
+          <div style="margin-bottom:32px;">
+            <h3 style="font-family:'Playfair Display','Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--terminal-bright); letter-spacing:0.3px; margin-bottom:16px;">Gallery</h3>
+            
+            <div id="solar-carousel" class="solar-carousel" style="position:relative;width:100%;height:340px;perspective:1200px;overflow:visible;">
+              
+              <!-- 3D Scene -->
+              <div id="carousel-scene" class="carousel-scene" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;perspective-origin:50% 50%;">
+                
+                <!-- Slide 1 -->
+                <div class="carousel-card" data-index="0" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;padding:0 16px;transform-style:preserve-3d;cursor:pointer;">
+                  <div class="carousel-img-frame" style="width:100%;max-width:480px;height:240px;border-radius:10px;overflow:hidden;border:2px solid rgba(255,203,5,0.5);box-shadow:0 12px 50px rgba(255,203,5,0.22),0 0 0 1px rgba(255,203,5,0.08);transition:all 0.65s cubic-bezier(0.34,1.56,0.64,1);transform-style:preserve-3d;">
+                    <img src="solarcar.jpg" alt="Solar Car" style="width:100%;height:100%;display:block;object-fit:cover;" draggable="false" />
+                  </div>
+                  <div class="carousel-caption" style="margin-top:12px;text-align:center;opacity:0;transform:translateY(10px) scale(0.92);transition:all 0.45s ease 0.2s;transform-style:preserve-3d;">
+                    <div style="font-family:'Playfair Display','Noto Serif SC',serif;font-size:15px;font-weight:600;color:#FFCB05;letter-spacing:0.3px;">Meet the car in my year!</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;">01 / 03</div>
+                  </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-card" data-index="1" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;padding:0 16px;transform-style:preserve-3d;cursor:pointer;">
+                  <div class="carousel-img-frame" style="width:100%;max-width:480px;height:240px;border-radius:10px;overflow:hidden;border:2px solid rgba(74,127,193,0.5);box-shadow:0 12px 50px rgba(74,127,193,0.18),0 0 0 1px rgba(74,127,193,0.08);transition:all 0.65s cubic-bezier(0.34,1.56,0.64,1);transform-style:preserve-3d;">
+                    <img src="routemap.webp" alt="Route Map" style="width:100%;height:100%;display:block;object-fit:cover;" draggable="false" />
+                  </div>
+                  <div class="carousel-caption" style="margin-top:12px;text-align:center;opacity:0;transform:translateY(10px) scale(0.92);transition:all 0.45s ease 0.2s;transform-style:preserve-3d;">
+                    <div style="font-family:'Playfair Display','Noto Serif SC',serif;font-size:15px;font-weight:600;color:#4a7fc1;letter-spacing:0.3px;">Summer solar trek, travelling from Ann Arbor to Los Angeles.</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;">02 / 03</div>
+                  </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-card" data-index="2" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;padding:0 16px;transform-style:preserve-3d;cursor:pointer;">
+                  <div class="carousel-img-frame" style="width:100%;max-width:480px;height:240px;border-radius:10px;overflow:hidden;border:2px solid rgba(160,180,200,0.5);box-shadow:0 12px 50px rgba(160,180,200,0.12),0 0 0 1px rgba(160,180,200,0.08);transition:all 0.65s cubic-bezier(0.34,1.56,0.64,1);transform-style:preserve-3d;">
+                    <img src="workspace.jpg" alt="Workspace" style="width:100%;height:100%;display:block;object-fit:cover;" draggable="false" />
+                  </div>
+                  <div class="carousel-caption" style="margin-top:12px;text-align:center;opacity:0;transform:translateY(10px) scale(0.92);transition:all 0.45s ease 0.2s;transform-style:preserve-3d;">
+                    <div style="font-family:'Playfair Display','Noto Serif SC',serif;font-size:15px;font-weight:600;color:#a0b4c8;letter-spacing:0.3px;">The place where we work ^ ^</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;">03 / 03</div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Navigation arrows -->
+              <button id="carousel-prev" class="carousel-btn" aria-label="Previous slide" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:20;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,0.12);background:rgba(10,10,10,0.8);backdrop-filter:blur(10px);color:rgba(255,255,255,0.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;transition:all 0.25s ease;padding:0;outline:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 12px rgba(0,0,0,0.5);" onmouseover="this.style.borderColor='rgba(255,203,5,0.4)';this.style.color='#FFCB05';this.style.background='rgba(255,203,5,0.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='rgba(255,255,255,0.6)';this.style.background='rgba(10,10,10,0.8)'">‹</button>
+              <button id="carousel-next" class="carousel-btn" aria-label="Next slide" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:20;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,0.12);background:rgba(10,10,10,0.8);backdrop-filter:blur(10px);color:rgba(255,255,255,0.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;transition:all 0.25s ease;padding:0;outline:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 12px rgba(0,0,0,0.5);" onmouseover="this.style.borderColor='rgba(255,203,5,0.4)';this.style.color='#FFCB05';this.style.background='rgba(255,203,5,0.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='rgba(255,255,255,0.6)';this.style.background='rgba(10,10,10,0.8)'">›</button>
+
+              <!-- Dot indicators -->
+              <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:9px;">
+                <span class="carousel-dot active" data-dot="0" style="width:22px;height:7px;border-radius:4px;background:#FFCB05;cursor:pointer;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 8px rgba(255,203,5,0.4);"></span>
+                <span class="carousel-dot" data-dot="1" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);"></span>
+                <span class="carousel-dot" data-dot="2" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════ Role Details (Editorial Tri-Tone style, blue/yellow palette) ═══════ -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Card 1: Operations -->
+            <div style="border-left:3px solid #FFCB05;background:linear-gradient(135deg, rgba(255,203,5,0.06) 0%, transparent 70%);border-radius:0 8px 8px 0;padding:16px 18px;">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">
+                <span style="font-size:9px;color:#FFCB05;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;">OPS</span>
+                <span style="font-size:14px;font-weight:700;color:var(--terminal-bright);">Race-Day Operations</span>
+              </div>
+              <p style="font-size:12.5px;line-height:1.75;color:rgba(250,248,245,0.72);margin:0;">Developed and maintained <strong style="color:#FFCB05;">operational workflows</strong> and logistics plans for a competition-grade solar vehicle, coordinating team activities and race-day operations across multi-day solar racing events spanning thousands of miles.</p>
+            </div>
+
+            <!-- Card 2: Resource Strategy -->
+            <div style="border-left:3px solid #4a7fc1;background:linear-gradient(135deg, rgba(74,127,193,0.06) 0%, transparent 70%);border-radius:0 8px 8px 0;padding:16px 18px;">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">
+                <span style="font-size:9px;color:#4a7fc1;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;">RESOURCE</span>
+                <span style="font-size:14px;font-weight:700;color:var(--terminal-bright);">Partnership & Procurement</span>
+              </div>
+              <p style="font-size:12.5px;line-height:1.75;color:rgba(250,248,245,0.72);margin:0;">Led <strong style="color:#4a7fc1;">resource allocation</strong> strategy and procurement initiatives, contributing to over <strong style="color:#FFCB05;font-size:14px;">$2.4M+</strong> in secured partnerships and sponsorships to fuel our competitive racing program.</p>
+            </div>
+
+          </div>
+
+          <!-- Skill tags -->
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;">
+            <span class="exp-tag" style="border-color:#FFCB05;color:#FFCB05;">Route Planning</span>
+            <span class="exp-tag" style="border-color:#4a7fc1;color:#4a7fc1;">Logistics</span>
+            <span class="exp-tag" style="border-color:#FFCB05;color:#FFCB05;">Procurement</span>
+            <span class="exp-tag" style="border-color:#4a7fc1;color:#4a7fc1;">Resource Allocation</span>
+            <span class="exp-tag" style="border-color:#FFCB05;color:#FFCB05;">Operations</span>
+          </div>
+
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Experiences</div>
+      </div>
+
+      <!-- Project content views -->
+      <div class="content-view" id="content-proj-electric-trading">
+        <div class="content-header">
+          <div class="content-title">⚡ Demand Response Electric Trading &nbsp;<span style="color:var(--terminal-yellow);font-size:13px;font-style:italic;font-weight:400;">System Design</span></div>
+          <div class="content-path">~/Projects/electric-trading.md</div>
+        </div>
+        <div class="content-body">
+          <p style="color:#555;">[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Projects</div>
+      </div>
+
+	<div class="content-view" id="content-proj-optimization">
+        <div class="content-header">
+          <div class="content-title">📉 Investigation on Optimization Methods &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">Theorectical Research</span></div>
+          <div class="content-path">~/Projects/investigation-on-optimization-methods.md</div>
+        </div>
+        <div class="content-body">
+          <p style="color:#555;">[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Projects</div>
+      </div>
+
+      <div class="content-view" id="content-proj-video-calling">
+        <div class="content-header">
+          <div class="content-title">📹 Freely-Chat &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">Video Calling Platform</span></div>
+          <div class="content-path">~/Projects/freely-chat.md</div>
+        </div>
+        <div class="content-body">
+          <p style="color:#555;">[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Projects</div>
+      </div>
+
+      <div class="content-view" id="content-proj-music-for-now">
+        <div class="content-header">
+          <div class="content-title">🎵 Music for Now &nbsp;<span style="color:var(--terminal-magenta);font-size:13px;font-style:italic;font-weight:400;">App</span></div>
+          <div class="content-path">~/Projects/music-for-now.md</div>
+        </div>
+        <div class="content-body">
+          <p style="color:#555;">[Content coming soon]</p>
+        </div>
+        <div class="back-hint">Press <kbd>Esc</kbd> to go back to Projects</div>
+      </div>
+
+      <div class="content-view" id="content-hobbies">
+        <div class="content-header">
+          <div class="content-title">🎮 Skills & Interest</div>
+          <div class="content-path">~/Emma's Personal Profile/skills-interest.md</div>
+        </div>
+        <div class="content-body">
+          <p style="color:#555; font-size:12px; margin-bottom:20px;">Things I reach for when the terminal is closed.</p>
+
+          <div class="hobby-grid">
+
+            <!-- BADMINTON -->
+            <div class="hobby-card">
+              <svg width="108" height="128" viewBox="0 0 108 128" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #33d17a)">
+                <defs><clipPath id="clip-badminton"><ellipse cx="48" cy="46" rx="26" ry="32"/></clipPath></defs>
+                <ellipse cx="48" cy="46" rx="26" ry="32" stroke="#33d17a" stroke-width="1.7"/>
+                <g clip-path="url(#clip-badminton)" stroke="#33d17a" stroke-width="0.6" opacity="0.32">
+                  <line x1="18" y1="26" x2="78" y2="26"/><line x1="18" y1="36" x2="78" y2="36"/>
+                  <line x1="18" y1="46" x2="78" y2="46"/><line x1="18" y1="56" x2="78" y2="56"/>
+                  <line x1="18" y1="66" x2="78" y2="66"/>
+                  <line x1="30" y1="12" x2="30" y2="80"/><line x1="40" y1="12" x2="40" y2="80"/>
+                  <line x1="50" y1="12" x2="50" y2="80"/><line x1="60" y1="12" x2="60" y2="80"/>
+                </g>
+                <path d="M36 78 L48 84 L60 78" stroke="#33d17a" stroke-width="1.7" stroke-linejoin="round"/>
+                <line x1="48" y1="84" x2="48" y2="118" stroke="#33d17a" stroke-width="2.4" stroke-linecap="round"/>
+                <rect x="43" y="106" width="10" height="2.5" rx="1.2" fill="#33d17a" opacity="0.38"/>
+                <rect x="43" y="112" width="10" height="2.5" rx="1.2" fill="#33d17a" opacity="0.38"/>
+                <circle cx="88" cy="22" r="5" stroke="#33d17a" stroke-width="1.5"/>
+                <line x1="88" y1="27" x2="82" y2="50" stroke="#33d17a" stroke-width="1" opacity="0.6"/>
+                <line x1="88" y1="27" x2="88" y2="52" stroke="#33d17a" stroke-width="1" opacity="0.6"/>
+                <line x1="88" y1="27" x2="94" y2="50" stroke="#33d17a" stroke-width="1" opacity="0.6"/>
+                <line x1="88" y1="27" x2="78" y2="47" stroke="#33d17a" stroke-width="0.8" opacity="0.4"/>
+                <line x1="88" y1="27" x2="98" y2="47" stroke="#33d17a" stroke-width="0.8" opacity="0.4"/>
+                <path d="M76 46 Q88 56 100 46" stroke="#33d17a" stroke-width="0.9" opacity="0.6"/>
+              </svg>
+              <div class="hobby-label" style="color:#33d17a;">Badminton</div>
+              <div class="hobby-desc"></div>
+            </div>
+
+            <!-- TENNIS -->
+            <div class="hobby-card">
+              <svg width="110" height="108" viewBox="0 0 110 108" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #f5c211)">
+                <defs><clipPath id="clip-tennis"><ellipse cx="52" cy="50" rx="30" ry="36"/></clipPath></defs>
+                <circle cx="87" cy="22" r="14" stroke="#f5c211" stroke-width="1.5"/>
+                <path d="M76 13 Q83 22 76 31" stroke="#f5c211" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M98 13 Q91 22 98 31" stroke="#f5c211" stroke-width="1.2" stroke-linecap="round"/>
+                <ellipse cx="52" cy="50" rx="30" ry="36" stroke="#f5c211" stroke-width="1.7"/>
+                <g clip-path="url(#clip-tennis)" stroke="#f5c211" stroke-width="0.6" opacity="0.28">
+                  <line x1="18" y1="26" x2="86" y2="26"/><line x1="18" y1="35" x2="86" y2="35"/>
+                  <line x1="18" y1="44" x2="86" y2="44"/><line x1="18" y1="53" x2="86" y2="53"/>
+                  <line x1="18" y1="62" x2="86" y2="62"/><line x1="18" y1="71" x2="86" y2="71"/>
+                  <line x1="30" y1="12" x2="30" y2="88"/><line x1="40" y1="12" x2="40" y2="88"/>
+                  <line x1="52" y1="12" x2="52" y2="88"/><line x1="64" y1="12" x2="64" y2="88"/>
+                  <line x1="74" y1="12" x2="74" y2="88"/>
+                </g>
+                <path d="M38 86 L52 92 L66 86" stroke="#f5c211" stroke-width="1.7" stroke-linejoin="round"/>
+                <line x1="52" y1="92" x2="52" y2="106" stroke="#f5c211" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+              <div class="hobby-label" style="color:#f5c211;">Tennis</div>
+              <div class="hobby-desc"></div>
+            </div>
+
+            <!-- GUITAR -->
+            <div class="hobby-card">
+              <svg width="88" height="148" viewBox="0 0 88 148" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #bf5af2)">
+                <path d="M44 52 C58 52,70 60,70 73 C70 81,64 85,58 87 C68 93,72 107,68 118 C64 130,54 136,44 136 C34 136,24 130,20 118 C16 107,20 93,30 87 C24 85,18 81,18 73 C18 60,30 52,44 52 Z" stroke="#bf5af2" stroke-width="1.7"/>
+                <circle cx="44" cy="108" r="10" stroke="#bf5af2" stroke-width="1.4"/>
+                <rect x="34" y="120" width="20" height="3" rx="1.5" stroke="#bf5af2" stroke-width="1.2"/>
+                <rect x="39" y="14" width="10" height="40" rx="2" stroke="#bf5af2" stroke-width="1.5"/>
+                <line x1="39" y1="18" x2="49" y2="18" stroke="#bf5af2" stroke-width="2.2"/>
+                <rect x="36" y="5" width="16" height="13" rx="3" stroke="#bf5af2" stroke-width="1.5"/>
+                <line x1="36" y1="9"  x2="31" y2="9"  stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="36" y1="13" x2="31" y2="13" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="36" y1="17" x2="31" y2="17" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="52" y1="9"  x2="57" y2="9"  stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="52" y1="13" x2="57" y2="13" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="52" y1="17" x2="57" y2="17" stroke="#bf5af2" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="41"   y1="19" x2="38" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
+                <line x1="42.5" y1="19" x2="40" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
+                <line x1="44"   y1="19" x2="42" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
+                <line x1="45.5" y1="19" x2="46" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
+                <line x1="47"   y1="19" x2="48" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
+                <line x1="48.5" y1="19" x2="50" y2="124" stroke="#bf5af2" stroke-width="0.5" opacity="0.45"/>
+                <line x1="39" y1="26" x2="49" y2="26" stroke="#bf5af2" stroke-width="0.8" opacity="0.4"/>
+                <line x1="39" y1="34" x2="49" y2="34" stroke="#bf5af2" stroke-width="0.8" opacity="0.4"/>
+                <line x1="39" y1="42" x2="49" y2="42" stroke="#bf5af2" stroke-width="0.8" opacity="0.4"/>
+                <circle cx="44" cy="30" r="1.5" fill="#bf5af2" opacity="0.45"/>
+              </svg>
+              <div class="hobby-label" style="color:#bf5af2;">Guitar</div>
+              <div class="hobby-desc"></div>
+            </div>
+
+            <!-- MUSICALS -->
+            <div class="hobby-card">
+              <svg width="130" height="104" viewBox="0 0 130 104" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #64d2ff)">
+                <circle cx="38" cy="46" r="24" stroke="#64d2ff" stroke-width="1.7"/>
+                <path d="M29 40 Q32 36 35 40" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M41 40 Q44 36 47 40" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M26 54 Q38 66 50 54" stroke="#64d2ff" stroke-width="1.7" stroke-linecap="round"/>
+                <circle cx="26" cy="54" r="1.8" fill="#64d2ff" opacity="0.45"/>
+                <circle cx="50" cy="54" r="1.8" fill="#64d2ff" opacity="0.45"/>
+                <circle cx="92" cy="52" r="24" stroke="#64d2ff" stroke-width="1.7"/>
+                <path d="M83 46 Q86 50 89 46" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M95 46 Q98 50 101 46" stroke="#64d2ff" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M80 62 Q92 50 104 62" stroke="#64d2ff" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M83 55 Q82 61 83 64" stroke="#64d2ff" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
+                <path d="M101 55 Q102 61 101 64" stroke="#64d2ff" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
+                <text x="4"   y="98" font-size="15" fill="#64d2ff" opacity="0.5" font-family="sans-serif">♪</text>
+                <text x="112" y="98" font-size="15" fill="#64d2ff" opacity="0.5" font-family="sans-serif">♫</text>
+                <line x1="14" y1="82" x2="116" y2="82" stroke="#64d2ff" stroke-width="0.7" opacity="0.2" stroke-dasharray="4,3"/>
+              </svg>
+              <div class="hobby-label" style="color:#64d2ff;">Musicals</div>
+              <div class="hobby-desc"></div>
+            </div>
+
+            <!-- COOKING -->
+            <div class="hobby-card">
+              <svg width="108" height="118" viewBox="0 0 108 118" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #ff453a)">
+                <path d="M33 30 Q29 22 33 14 Q37 6 33 0"  stroke="#ff453a" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+                <path d="M54 28 Q50 20 54 12 Q58 4 54 0"  stroke="#ff453a" stroke-width="1.3" stroke-linecap="round" opacity="0.75"/>
+                <path d="M75 30 Q71 22 75 14 Q79 6 75 0"  stroke="#ff453a" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+                <path d="M24 40 Q54 30 84 40" stroke="#ff453a" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="54" cy="34" r="4.5" stroke="#ff453a" stroke-width="1.5"/>
+                <path d="M22 46 L24 92 Q54 102 84 92 L86 46" stroke="#ff453a" stroke-width="1.7" stroke-linejoin="round"/>
+                <ellipse cx="54" cy="46" rx="32" ry="7" stroke="#ff453a" stroke-width="1.7"/>
+                <path d="M22 58 Q10 58 10 66 Q10 74 22 74" stroke="#ff453a" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M86 58 Q98 58 98 66 Q98 74 86 74" stroke="#ff453a" stroke-width="1.7" stroke-linecap="round"/>
+                <line x1="28" y1="68" x2="80" y2="68" stroke="#ff453a" stroke-width="0.7" opacity="0.22"/>
+                <line x1="24" y1="104" x2="84" y2="104" stroke="#ff453a" stroke-width="1" opacity="0.28" stroke-dasharray="4,3"/>
+              </svg>
+              <div class="hobby-label" style="color:#ff453a;">Cooking</div>
+              <div class="hobby-desc"></div>
+            </div>
+
+            <!-- HIKING -->
+            <div class="hobby-card">
+              <svg width="140" height="100" viewBox="0 0 140 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="hobby-svg" style="filter:drop-shadow(0 0 5px #0a84ff)">
+                <polyline points="0,85 28,28 56,85"   stroke="#0a84ff" stroke-width="1"   opacity="0.25" stroke-linejoin="round"/>
+                <polyline points="30,85 65,16 100,85"  stroke="#0a84ff" stroke-width="1.3" opacity="0.5"  stroke-linejoin="round"/>
+                <polyline points="58,34 65,16 72,34"   stroke="#0a84ff" stroke-width="1"   opacity="0.4"  stroke-linejoin="round"/>
+                <polyline points="10,85 42,42 74,85"   stroke="#0a84ff" stroke-width="2"   opacity="0.9"  stroke-linejoin="round"/>
+                <polyline points="35,56 42,42 49,56"   stroke="#0a84ff" stroke-width="1.2" opacity="0.7"  stroke-linejoin="round"/>
+                <circle cx="120" cy="22" r="9" stroke="#0a84ff" stroke-width="1.4"/>
+                <line x1="120" y1="9"   x2="120" y2="5"   stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="133" y1="22"  x2="137" y2="22"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="129" y1="13"  x2="132" y2="10"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="129" y1="31"  x2="132" y2="34"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="111" y1="13"  x2="108" y2="10"  stroke="#0a84ff" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="0"   y1="85"  x2="140" y2="85"  stroke="#0a84ff" stroke-width="1"   opacity="0.28"/>
+                <path d="M10 85 Q30 83 50 85 Q70 87 95 85 Q115 83 132 85" stroke="#0a84ff" stroke-width="0.9" opacity="0.38" stroke-dasharray="4,4"/>
+                <circle cx="104" cy="78" r="3.5" stroke="#0a84ff" stroke-width="1.3"/>
+                <line x1="104" y1="81.5" x2="104" y2="91" stroke="#0a84ff" stroke-width="1.3"/>
+                <line x1="100" y1="85"   x2="108" y2="85" stroke="#0a84ff" stroke-width="1.3"/>
+                <line x1="104" y1="91"   x2="101" y2="98" stroke="#0a84ff" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="104" y1="91"   x2="107" y2="98" stroke="#0a84ff" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="108" y1="82"   x2="113" y2="98" stroke="#0a84ff" stroke-width="1"   opacity="0.6"  stroke-linecap="round"/>
+              </svg>
+              <div class="hobby-label" style="color:#0a84ff;">Hiking</div>
+              <div class="hobby-desc"></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="back-hint">
+          Press <kbd>Esc</kbd> to go back to menu
+        </div>
+      </div>
+
+      <div class="content-view" id="content-contact">
+        <div class="content-header">
+          <div class="content-title">📬 Contact</div>
+          <div class="content-path">~/Emma's Personal Profile/contact.md</div>
+        </div>
+        <div class="content-body">
+
+          <h3>Get in Touch</h3>
+          <div style="margin-top: 12px;">
+            <div class="contact-line">
+              <span class="contact-key">phone</span>
+              <span class="contact-val">(+1) 734-465-0522</span>
+            </div>
+            <div class="contact-line">
+              <span class="contact-key">email</span>
+              <span class="contact-val"><a href="mailto:ywzhuo@umich.edu">ywzhuo@umich.edu</a></span>
+            </div>
+            <div class="contact-line">
+              <span class="contact-key">linkedin</span>
+              <span class="contact-val"><a href="https://www.linkedin.com/in/Yuwei-Zhuo" target="_blank">linkedin.com/in/Yuwei-Zhuo</a></span>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px;">Response Time</h3>
+          <p>Rapid response. No rate limits here — looking forward to chatting about job opportunities or collaborations! 🚀</p>
+
+        </div>
+        <div class="back-hint">
+          Press <kbd>Esc</kbd> to go back to menu
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // STATE
+    // ============================================
+    let currentState = 'boot';
+    let selectedIndex = 0;
+    let selectedExpIndex = 0;
+    let selectedProjIndex = 0;
+    let userInput = '';
+    let fromExpMenu = false;
+    let fromProjMenu = false;
+
+    const menuItems      = document.querySelectorAll('#menu-block .menu-entry');
+    const expMenuItems   = document.querySelectorAll('#exp-menu-block .menu-entry');
+    const projMenuItems  = document.querySelectorAll('#projects-menu-block .menu-entry');
+    const inputDisplay   = document.getElementById('input-display');
+    const inputCursor    = document.getElementById('input-cursor');
+    const secondBlock    = document.getElementById('second-block');
+    const menuBlock      = document.getElementById('menu-block');
+    const expMenuBlock   = document.getElementById('exp-menu-block');
+    const projMenuBlock  = document.getElementById('projects-menu-block');
+
+    // ============================================
+    // BOOT SEQUENCE
+    // ============================================
+    async function bootSequence() {
+      const cmd1Text = document.getElementById('cmd1-text');
+      const asciiBlock = document.getElementById('ascii-block');
+      const interactiveBlock = document.getElementById('interactive-block');
+      
+      // Type first command
+      await typeText(cmd1Text, 'welcome.txt', 60);
+      await sleep(200);
+      
+      // Show ASCII and welcome
+      document.getElementById('cursor1').style.display = 'none';
+      asciiBlock.classList.add('visible');
+      await sleep(400);
+      
+      // Show interactive prompt
+      interactiveBlock.classList.add('visible');
+      currentState = 'waiting';
+    }
+
+    function typeText(element, text, speed = 50) {
+      return new Promise(resolve => {
+        let i = 0;
+        const interval = setInterval(() => {
+          element.textContent += text[i];
+          i++;
+          if (i >= text.length) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, speed);
+      });
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // ============================================
+    // KEYBOARD HANDLING
+    // ============================================
+    document.addEventListener('keydown', handleKeyDown);
+
+    function handleKeyDown(e) {
+      const openModal = document.querySelector('.modal-overlay.active');
+      if (openModal) {
+        closeAllModals();
+        // If reject modal was dismissed by typing 'y', carry through to waiting state
+        if (openModal.id === 'modal-reject' && currentState === 'waiting' && (e.key === 'y' || e.key === 'Y')) {
+          retryInput();
+          handleWaitingState(e);
+        }
+        return;
+      }
+
+      switch(currentState) {
+        case 'waiting':        handleWaitingState(e);    break;
+        case 'menu':           handleMenuState(e);        break;
+        case 'exp-menu':       handleExpMenuState(e);     break;
+        case 'projects-menu':  handleProjMenuState(e);    break;
+        case 'content':        handleContentState(e);     break;
+      }
+    }
+
+    function handleWaitingState(e) {
+      e.preventDefault();
+      
+      if (e.key === 'y' || e.key === 'Y') {
+        userInput = 'y';
+        inputDisplay.textContent = 'y';
+        inputDisplay.classList.add('yes');
+        inputCursor.style.display = 'none';
+        playSound('select');
+        
+        // After y, show second prompt and menu
+        setTimeout(() => {
+          secondBlock.classList.remove('hidden');
+          secondBlock.classList.add('visible');
+          
+          setTimeout(() => {
+            menuBlock.classList.remove('hidden');
+            menuBlock.classList.add('visible');
+            currentState = 'menu';
+            selectedIndex = 0;
+            updateSelection();
+          }, 300);
+        }, 400);
+        
+      } else if (e.key === 'n' || e.key === 'N') {
+        userInput = 'n';
+        inputDisplay.textContent = 'n';
+        inputCursor.style.display = 'none';
+        playSound('tick');
+        showRejectModal();
+        
+      } else if (e.key === 'Enter') {
+        if (userInput === 'y') {
+          // Already handled above
+        } else if (userInput === 'n') {
+          showRejectModal();
+        } else {
+          // Default to yes
+          userInput = 'y';
+          inputDisplay.textContent = 'y';
+          inputDisplay.classList.add('yes');
+          inputCursor.style.display = 'none';
+          playSound('select');
+          
+          setTimeout(() => {
+            secondBlock.classList.remove('hidden');
+            secondBlock.classList.add('visible');
+            
+            setTimeout(() => {
+              menuBlock.classList.remove('hidden');
+              menuBlock.classList.add('visible');
+              currentState = 'menu';
+              selectedIndex = 0;
+              updateSelection();
+            }, 300);
+          }, 400);
+        }
+        
+      } else if (e.key === 'Backspace') {
+        if (userInput.length > 0) {
+          userInput = '';
+          inputDisplay.textContent = '';
+          inputDisplay.classList.remove('yes');
+          inputCursor.style.display = 'inline-block';
+        }
+      }
+    }
+
+    function handleMenuState(e) {
+      switch(e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          selectedIndex = selectedIndex > 0 ? selectedIndex - 1 : menuItems.length - 1;
+          updateSelection();
+          playSound('tick');
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          selectedIndex = selectedIndex < menuItems.length - 1 ? selectedIndex + 1 : 0;
+          updateSelection();
+          playSound('tick');
+          break;
+        case 'Enter':
+          e.preventDefault();
+          selectSection(menuItems[selectedIndex].dataset.section);
+          playSound('select');
+          break;
+      }
+    }
+
+    function handleContentState(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (fromExpMenu) goBackToExpMenu();
+        else if (fromProjMenu) goBackToProjMenu();
+        else goBackToMainMenu();
+      }
+    }
+
+    function handleExpMenuState(e) {
+      switch(e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          selectedExpIndex = selectedExpIndex > 0 ? selectedExpIndex - 1 : expMenuItems.length - 1;
+          updateExpSelection();
+          playSound('tick');
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          selectedExpIndex = selectedExpIndex < expMenuItems.length - 1 ? selectedExpIndex + 1 : 0;
+          updateExpSelection();
+          playSound('tick');
+          break;
+        case 'Enter':
+          e.preventDefault();
+          selectExpSection(expMenuItems[selectedExpIndex].dataset.expsection);
+          playSound('select');
+          break;
+        case 'Escape':
+          e.preventDefault();
+          goBackToMainMenu();
+          break;
+      }
+    }
+
+    function handleProjMenuState(e) {
+      switch(e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          selectedProjIndex = selectedProjIndex > 0 ? selectedProjIndex - 1 : projMenuItems.length - 1;
+          updateProjSelection();
+          playSound('tick');
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          selectedProjIndex = selectedProjIndex < projMenuItems.length - 1 ? selectedProjIndex + 1 : 0;
+          updateProjSelection();
+          playSound('tick');
+          break;
+        case 'Enter':
+          e.preventDefault();
+          selectProjSection(projMenuItems[selectedProjIndex].dataset.projsection);
+          playSound('select');
+          break;
+        case 'Escape':
+          e.preventDefault();
+          goBackToMainMenu();
+          break;
+      }
+    }
+
+    function updateSelection() {
+      menuItems.forEach((item, index) => {
+        item.classList.toggle('selected', index === selectedIndex);
+      });
+      menuItems[selectedIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function updateExpSelection() {
+      expMenuItems.forEach((item, index) => {
+        item.classList.toggle('selected', index === selectedExpIndex);
+      });
+      expMenuItems[selectedExpIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function updateProjSelection() {
+      projMenuItems.forEach((item, index) => {
+        item.classList.toggle('selected', index === selectedProjIndex);
+      });
+      projMenuItems[selectedProjIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function selectSection(section) {
+      if (section === 'experiences') {
+        menuBlock.classList.add('hidden');
+        menuBlock.classList.remove('visible');
+        expMenuBlock.classList.remove('hidden');
+        expMenuBlock.classList.add('visible');
+        currentState = 'exp-menu';
+        selectedExpIndex = 0;
+        updateExpSelection();
+        return;
+      }
+      if (section === 'projects') {
+        menuBlock.classList.add('hidden');
+        menuBlock.classList.remove('visible');
+        projMenuBlock.classList.remove('hidden');
+        projMenuBlock.classList.add('visible');
+        currentState = 'projects-menu';
+        selectedProjIndex = 0;
+        updateProjSelection();
+        return;
+      }
+
+      fromExpMenu = false;
+      fromProjMenu = false;
+      currentState = 'content';
+      menuBlock.classList.add('hidden');
+      menuBlock.classList.remove('visible');
+      document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(`content-${section}`).classList.add('active');
+      document.getElementById('terminal-body').scrollTop = 0;
+    }
+
+    function selectExpSection(id) {
+      fromExpMenu = true;
+      fromProjMenu = false;
+      currentState = 'content';
+      expMenuBlock.classList.add('hidden');
+      expMenuBlock.classList.remove('visible');
+      document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(`content-exp-${id}`).classList.add('active');
+      document.getElementById('terminal-body').scrollTop = 0;
+    }
+
+    function selectProjSection(id) {
+      fromProjMenu = true;
+      fromExpMenu = false;
+      currentState = 'content';
+      projMenuBlock.classList.add('hidden');
+      projMenuBlock.classList.remove('visible');
+      document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(`content-proj-${id}`).classList.add('active');
+      document.getElementById('terminal-body').scrollTop = 0;
+    }
+
+    function goBackToMainMenu() {
+      currentState = 'menu';
+      document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+      expMenuBlock.classList.add('hidden');
+      expMenuBlock.classList.remove('visible');
+      projMenuBlock.classList.add('hidden');
+      projMenuBlock.classList.remove('visible');
+      menuBlock.classList.remove('hidden');
+      menuBlock.classList.add('visible');
+      updateSelection();
+    }
+
+    function goBackToExpMenu() {
+      fromExpMenu = false;
+      currentState = 'exp-menu';
+      document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+      expMenuBlock.classList.remove('hidden');
+      expMenuBlock.classList.add('visible');
+      updateExpSelection();
+    }
+
+    function goBackToProjMenu() {
+      fromProjMenu = false;
+      currentState = 'projects-menu';
+      document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+      projMenuBlock.classList.remove('hidden');
+      projMenuBlock.classList.add('visible');
+      updateProjSelection();
+    }
+
+    function goBackToMenu() {
+      goBackToMainMenu();
+    }
+
+    // ============================================
+    // MODALS
+    // ============================================
+    function showRejectModal() {
+      document.getElementById('modal-reject').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function closeAllModals() {
+      document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.classList.remove('active');
+      });
+      stopMatrix();
+    }
+
+    function retryInput() {
+      closeAllModals();
+      userInput = '';
+      inputDisplay.textContent = '';
+      inputDisplay.classList.remove('yes');
+      inputCursor.style.display = 'inline-block';
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeAllModals();
+      });
+    });
+
+    // ============================================
+    // TRAFFIC LIGHTS
+    // ============================================
+    function handleTrafficLight(action) {
+      if (action === 'close') {
+        document.getElementById('modal-close').classList.add('active');
+      } else if (action === 'minimize') {
+        document.getElementById('modal-minimize').classList.add('active');
+      } else if (action === 'maximize') {
+        triggerMatrix();
+      }
+    }
+
+    // ============================================
+    // MATRIX
+    // ============================================
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    let matrixInterval = null;
+
+    function triggerMatrix() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.classList.add('active');
+
+      const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = [];
+
+      for (let i = 0; i < columns; i++) {
+        drops[i] = 1;
+      }
+
+      function drawMatrix() {
+        ctx.fillStyle = 'rgba(12, 12, 12, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#33d17a';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+
+      matrixInterval = setInterval(drawMatrix, 50);
+      setTimeout(() => { stopMatrix(); }, 4000);
+    }
+
+    function stopMatrix() {
+      if (matrixInterval) {
+        clearInterval(matrixInterval);
+        matrixInterval = null;
+      }
+      canvas.classList.remove('active');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // ============================================
+    // AUDIO
+    // ============================================
+    let audioCtx = null;
+
+    function playSound(type) {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      if (type === 'tick') {
+        oscillator.frequency.value = 600;
+        oscillator.type = 'square';
+        gainNode.gain.value = 0.03;
+      } else if (type === 'select') {
+        oscillator.frequency.value = 1000;
+        oscillator.type = 'square';
+        gainNode.gain.value = 0.05;
+      }
+      
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.04);
+    }
+
+    // ============================================
+    // MOUSE
+    // ============================================
+    menuItems.forEach((item, index) => {
+      item.addEventListener('mouseenter', () => {
+        if (currentState === 'menu') {
+          selectedIndex = index;
+          updateSelection();
+        }
+      });
+      
+      item.addEventListener('click', () => {
+        if (currentState === 'menu') {
+          selectedIndex = index;
+          updateSelection();
+          selectSection(item.dataset.section);
+          playSound('select');
+        }
+      });
+    });
+
+    expMenuItems.forEach((item, index) => {
+      item.addEventListener('mouseenter', () => {
+        if (currentState === 'exp-menu') {
+          selectedExpIndex = index;
+          updateExpSelection();
+        }
+      });
+      item.addEventListener('click', () => {
+        if (currentState === 'exp-menu') {
+          selectedExpIndex = index;
+          updateExpSelection();
+          selectExpSection(item.dataset.expsection);
+          playSound('select');
+        }
+      });
+    });
+
+    projMenuItems.forEach((item, index) => {
+      item.addEventListener('mouseenter', () => {
+        if (currentState === 'projects-menu') {
+          selectedProjIndex = index;
+          updateProjSelection();
+        }
+      });
+      item.addEventListener('click', () => {
+        if (currentState === 'projects-menu') {
+          selectedProjIndex = index;
+          updateProjSelection();
+          selectProjSection(item.dataset.projsection);
+          playSound('select');
+        }
+      });
+    });
+
+    // ============================================
+    // INIT
+    // ============================================
+    // ============================================
+    // SOLAR CAR PHOTO CAROUSEL
+    (function() {
+      const scene = document.getElementById('carousel-scene');
+      if (!scene) return;
+      const cards = scene.querySelectorAll('.carousel-card');
+      const captions = scene.querySelectorAll('.carousel-caption');
+      const dots = document.querySelectorAll('.carousel-dot');
+      const prevBtn = document.getElementById('carousel-prev');
+      const nextBtn = document.getElementById('carousel-next');
+      const total = cards.length;
+      let current = 0;
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      // Strong spring easing for bouncy feel
+      const SPRING = 'cubic-bezier(0.34,1.56,0.64,1)';
+      const SMOOTH = 'cubic-bezier(0.25,0.46,0.45,0.94)';
+      const DURATION = '0.65s';
+
+      // 3D layout parameters
+      // ACTIVE card: scale 1.0, rotateY 0, translateZ 120px, translateX 0
+      // PREV card (immediate left): scale 0.76, rotateY 50deg, translateZ -80px, translateX -52%
+      // PREV card (two left): scale 0.52, rotateY 70deg, translateZ -160px, translateX -72%
+      // NEXT card (immediate right): scale 0.76, rotateY -50deg, translateZ -80px, translateX 52%
+      // NEXT card (two right): scale 0.52, rotateY -70deg, translateZ -160px, translateX 72%
+      function getCardTransform(idx, cur) {
+        const prevOffset = (cur - idx + total) % total;
+        const nextOffset = (idx - cur + total) % total;
+
+        if (idx === cur) {
+          // Active: front and center
+          return { scale: 1.0, rotateY: 0, translateZ: 120, translateX: 0, opacity: 1, zIndex: 10 };
+        } else if (prevOffset === 1) {
+          // One step behind (left)
+          return { scale: 0.76, rotateY: 50, translateZ: -80, translateX: -52, opacity: 0.55, zIndex: 6 };
+        } else if (prevOffset === 2) {
+          // Two steps behind (far left)
+          return { scale: 0.52, rotateY: 68, translateZ: -160, translateX: -72, opacity: 0.2, zIndex: 3 };
+        } else if (nextOffset === 1) {
+          // One step ahead (right)
+          return { scale: 0.76, rotateY: -50, translateZ: -80, translateX: 52, opacity: 0.55, zIndex: 6 };
+        } else if (nextOffset === 2) {
+          // Two steps ahead (far right)
+          return { scale: 0.52, rotateY: -68, translateZ: -160, translateX: 72, opacity: 0.2, zIndex: 3 };
+        }
+        return { scale: 0.3, rotateY: 0, translateZ: -200, translateX: 0, opacity: 0, zIndex: 1 };
+      }
+
+      function applyTransform(card, t) {
+        card.style.transform =
+          'scale3d(' + t.scale + ',' + t.scale + ',' + t.scale + ') ' +
+          'translateX(' + t.translateX + '%) ' +
+          'translateZ(' + t.translateZ + 'px) ' +
+          'rotateY(' + t.rotateY + 'deg)';
+        card.style.opacity = t.opacity;
+        card.style.zIndex = t.zIndex;
+        card.style.pointerEvents = t.opacity < 0.15 ? 'none' : 'auto';
+      }
+
+      function goTo(idx) {
+        if (idx < 0) idx = total - 1;
+        if (idx >= total) idx = 0;
+        const prev = current;
+        current = idx;
+
+        // Apply transforms to all cards
+        cards.forEach((card, i) => {
+          const t = getCardTransform(i, current);
+          applyTransform(card, t);
+          const frame = card.querySelector('.carousel-img-frame');
+          if (frame) {
+            if (i === current) {
+              frame.style.boxShadow = t.scale > 0.7
+                ? '0 16px 60px rgba(255,203,5,0.28), 0 0 0 2px rgba(255,203,5,0.5)'
+                : '0 12px 40px rgba(74,127,193,0.22), 0 0 0 1px rgba(74,127,193,0.35)';
+            } else {
+              frame.style.boxShadow = '0 8px 30px rgba(0,0,0,0.35)';
+            }
+          }
+        });
+
+        // Caption animation
+        captions.forEach((c, i) => {
+          if (i === current) {
+            c.style.opacity = '1';
+            c.style.transform = 'translateY(0) scale(1)';
+          } else {
+            c.style.opacity = '0';
+            c.style.transform = 'translateY(10px) scale(0.92)';
+          }
+        });
+
+        // Dot indicators
+        dots.forEach((d, i) => {
+          if (i === current) {
+            d.style.background = '#FFCB05';
+            d.style.boxShadow = '0 0 8px rgba(255,203,5,0.4)';
+            d.style.width = '22px';
+            d.style.borderRadius = '4px';
+          } else {
+            d.style.background = 'rgba(255,255,255,0.2)';
+            d.style.boxShadow = 'none';
+            d.style.width = '7px';
+            d.style.borderRadius = '50%';
+          }
+        });
+      }
+
+      prevBtn.addEventListener('click', () => goTo(current - 1));
+      nextBtn.addEventListener('click', () => goTo(current + 1));
+      dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.dot))));
+
+      // Click on a card to go to it
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const idx = parseInt(card.dataset.index);
+          if (idx !== current) goTo(idx);
+        });
+      });
+
+      // Touch / swipe support
+      const carouselEl = document.getElementById('solar-carousel');
+      carouselEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+      carouselEl.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          goTo(diff > 0 ? current + 1 : current - 1);
+        }
+      }, { passive: true });
+
+      // Keyboard support when solar section is visible
+      document.addEventListener('keydown', e => {
+        const solarView = document.getElementById('content-exp-solar');
+        if (!solarView || !solarView.classList.contains('active')) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current + 1); }
+      });
+
+      // Initialize
+      goTo(0);
+    })();
+
+    document.addEventListener('DOMContentLoaded', bootSequence);
+  </script>
+</body>
+</html>
