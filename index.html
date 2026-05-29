@@ -697,6 +697,125 @@
       margin-bottom: 10px;
       font-weight: 600;
     }
+
+    /* ===== Freely-Chat Pain Points ===== */
+    .freely-section {
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+      padding: 20px 0 40px;
+    }
+    .freely-intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--terminal-text);
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 10px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .freely-intro.visible { opacity: 1; transform: translateY(0); }
+    .pain-card {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .pain-card.visible { opacity: 1; transform: translateY(0); }
+    .pain-card.reverse { flex-direction: row-reverse; }
+    .fig-wrap {
+      flex: 0 0 340px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .fig-wrap img {
+      width: 100%;
+      display: block;
+    }
+    .fig-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 6px;
+      letter-spacing: 0.5px;
+    }
+    .pain-text-block { flex: 1; }
+    .pain-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .pain-badge.pt1 { background: rgba(232,93,4,0.15); color: #FF6B1A; border: 1px solid rgba(232,93,4,0.3); }
+    .pain-badge.pt2 { background: rgba(99,210,255,0.12); color: #64d2ff; border: 1px solid rgba(99,210,255,0.25); }
+    .pain-badge.pt3 { background: rgba(191,90,242,0.12); color: #bf5af2; border: 1px solid rgba(191,90,242,0.25); }
+    .pain-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: 22px;
+      color: var(--terminal-text);
+      margin-bottom: 14px;
+      line-height: 1.3;
+    }
+    .pain-body {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #999;
+    }
+    .freely-eureka {
+      text-align: center;
+      padding: 40px 0 10px;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .freely-eureka.visible { opacity: 1; transform: scale(1); }
+    .freely-eureka-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--terminal-yellow);
+      margin-bottom: 24px;
+    }
+    .freely-fig4-wrap {
+      display: inline-block;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--terminal-green);
+      box-shadow: 0 0 30px rgba(34,197,94,0.15), 0 8px 40px rgba(0,0,0,0.5);
+      max-width: 500px;
+    }
+    .freely-fig4-wrap img { display: block; max-width: 100%; }
+    .freely-demo-placeholder {
+      margin-top: 50px;
+      padding: 48px 20px;
+      border: 1px dashed var(--terminal-yellow);
+      border-radius: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      background: rgba(232,93,4,0.04);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+    }
+    .freely-demo-placeholder.visible { opacity: 1; transform: translateY(0); }
+    .freely-demo-placeholder .demo-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -1477,8 +1596,78 @@
           <div class="content-title">📹 Freely-Chat &nbsp;<span style="color:var(--terminal-cyan);font-size:13px;font-style:italic;font-weight:400;">Video Calling Platform</span></div>
           <div class="content-path">~/Projects/freely-chat.md</div>
         </div>
-        <div class="content-body">
-          <p style="color:#555;">[Content coming soon]</p>
+        <div class="content-body" id="freely-body" style="overflow-y:auto;max-height:calc(100vh - 140px);">
+          <div class="freely-section">
+
+            <!-- Intro -->
+            <div class="freely-intro" id="freely-intro">
+              Every great project starts with a little frustration. Here are three things about video calling that have been bugging me for a while…
+            </div>
+
+            <!-- Pain Point 1 -->
+            <div class="pain-card" id="pain1">
+              <div class="fig-wrap">
+                <img src="fig1.png" alt="Family video call scenario">
+                <div class="fig-label">fig.1</div>
+              </div>
+              <div class="pain-text-block">
+                <div class="pain-badge pt1">The Annoyance</div>
+                <div class="pain-title">Can't share the moment, even when we're miles apart</div>
+                <div class="pain-body">
+                  I'm on a video call with my parents back in my hometown. We're catching up, laughing about old stories — and then I remember the perfect photo from my last trip. But wait… our call app doesn't let me share pictures mid-call. So I either describe the photo, or I hang up, send it, and call back. Just like that, the moment is gone.<br><br>
+                  Why can't video calls feel more like actually <em>being together</em>?
+                </div>
+              </div>
+            </div>
+
+            <!-- Pain Point 2 -->
+            <div class="pain-card reverse" id="pain2">
+              <div class="fig-wrap">
+                <img src="fig2.png" alt="Video meeting feeling trapped">
+                <div class="fig-label">fig.2</div>
+              </div>
+              <div class="pain-text-block">
+                <div class="pain-badge pt2">The Constraint</div>
+                <div class="pain-title">Stuck in a box at the corner of the screen</div>
+                <div class="pain-body">
+                  During online presentations and video meetings, I always feel… trapped. Everyone's crammed into their own little rectangle, like sardines in a can. Give me a virtual conference hall any day — where the speaker can <em>walk</em> to different parts of the room as they talk, and the audience can wander around, explore, and feel the buzz of a real gathering.<br><br>
+                  Wouldn't that make meetings way more engaging?
+                </div>
+              </div>
+            </div>
+
+            <!-- Pain Point 3 -->
+            <div class="pain-card" id="pain3">
+              <div class="fig-wrap">
+                <img src="fig3.png" alt="Friends video call lacking interaction">
+                <div class="fig-label">fig.3</div>
+              </div>
+              <div class="pain-text-block">
+                <div class="pain-badge pt3">The Limit</div>
+                <div class="pain-title">Talking isn't the same as connecting</div>
+                <div class="pain-body">
+                  Video calling my friends is great — but let's be honest, sometimes a conversation just isn't enough to express how we feel. A virtual high-five, a shared virtual space, interactive gestures that go beyond "mute yourself please"…<br><br>
+                  What if video calls came alive with more ways to <em>interact</em> and <em>express</em>?
+                </div>
+              </div>
+            </div>
+
+            <!-- Eureka -->
+            <div class="freely-eureka" id="freely-eureka">
+              <div class="freely-eureka-label">✦ And then it hit me ✦</div>
+              <div class="freely-fig4-wrap">
+                <img src="fig4.png" alt="Freely-Chat concept">
+              </div>
+            </div>
+
+            <!-- Demo placeholder -->
+            <div class="freely-demo-placeholder" id="freely-demo">
+              <span class="demo-icon">🎬</span>
+              Demo coming soon…<br>
+              <span style="font-size:11px;margin-top:6px;display:block;opacity:0.6;">Stay tuned!</span>
+            </div>
+
+          </div>
         </div>
         <div class="back-hint">Press <kbd>Esc</kbd> to go back to Projects</div>
       </div>
@@ -2233,6 +2422,22 @@
     })();
 
     document.addEventListener('DOMContentLoaded', bootSequence);
+
+    // Freely-Chat scroll animations
+    (function() {
+      const freelyBody = document.getElementById('freely-body');
+      if (!freelyBody) return;
+      const targets = freelyBody.querySelectorAll('.freely-intro, .pain-card, .freely-eureka, .freely-demo-placeholder');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { root: freelyBody, threshold: 0.15 });
+      targets.forEach(el => io.observe(el));
+    })();
   </script>
 </body>
 </html>
