@@ -1345,7 +1345,7 @@ class SlidePresentation {
     this._scaleStage();
     window.addEventListener('resize', () => this._scaleStage());
     document.addEventListener('keydown', e => this._onKey(e));
-    document.addEventListener('wheel', e => this._onWheel(e), { passive: false });
+    // wheel navigation disabled — only keyboard/dots navigate slides
     this._touch();
     this.show(0);
   }
@@ -1388,6 +1388,12 @@ class SlidePresentation {
 
   _onKey(e) {
     if (e.target.getAttribute && e.target.getAttribute('contenteditable')) return;
+    if (e.key === 'Escape') {
+      // return focus to parent page so Esc handler works
+      window.parent.document.activeElement.blur();
+      window.parent.document.body.focus();
+      return;
+    }
     const map = {
       'ArrowRight': () => this.next(),
       'ArrowDown':  () => this.next(),
